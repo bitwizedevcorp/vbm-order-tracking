@@ -1,0 +1,396 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:Ferari99!!@127.0.0.1:3306/pacrumania"
+}
+
+model tb_bandejas {
+  idbandeja Int     @id
+  bandeja   String  @db.VarChar(45)
+  tara      Decimal @db.Decimal(4, 3)
+  estado    Int
+}
+
+model tb_calidad {
+  id      Int    @id
+  calidad String @db.VarChar(45)
+  estado  Int
+}
+
+model tb_campos {
+  codcampo      String @id @db.Char(36)
+  cod_productor String @db.Char(36)
+  campo         String @db.VarChar(45)
+  estado        Int    @db.TinyInt
+  sincro        Int    @db.TinyInt
+  lastmodified  BigInt
+}
+
+model tb_centros {
+  codcentro    String @id @db.Char(36)
+  codsector    String @db.Char(36)
+  centro       String @db.VarChar(45)
+  estado       Int    @db.TinyInt
+  sincro       Int    @db.TinyInt
+  lastmodified BigInt
+}
+
+model tb_clientes {
+  idcliente Int    @id
+  cliente   String @db.VarChar(45)
+  estado    Int    @db.TinyInt
+}
+
+model tb_delivery_pallet {
+  iddelivery     Int      @id @default(autoincrement())
+  idorden        Int
+  idpunnet_orden Int
+  nrpallet       Int
+  nr_bax         Int
+  kg             Decimal  @db.Decimal(6, 3)
+  bax_add        Int      @default(0)
+  kg_add         Decimal  @default(0.000) @db.Decimal(6, 3)
+  quality        Int
+  tipo           Int      @default(0)
+  idplace        Int      @default(0)
+  date_departure DateTime @db.DateTime(0)
+  idtransport    Int
+  patente        String   @db.VarChar(45)
+  state          Int
+  estado         Int
+}
+
+model tb_delivery_reception {
+  id                  Int      @id @default(autoincrement())
+  started             DateTime @db.DateTime(0)
+  finish              DateTime @db.DateTime(0)
+  tiempo              DateTime @db.Time(0)
+  line                Int
+  idorden             Int
+  idpunnet            Int
+  nropallet_delivery  Int
+  nropallet_recepcion Int
+  bax                 Int
+  kg_used             Decimal  @db.Decimal(10, 3)
+  old_pallet          Int      @default(0)
+}
+
+model tb_destino_clientes {
+  id        Int @id
+  idcliente Int
+  iddestino Int
+  estado    Int
+}
+
+model tb_destinos {
+  iddestino  Int    @id
+  destino    String @db.VarChar(45)
+  direccion1 String @db.VarChar(150)
+  direccion2 String @db.VarChar(150)
+  idpais     Int
+  estado     Int
+}
+
+model tb_hoja_proceso {
+  id                Int      @id @default(autoincrement())
+  fecha             DateTime @db.Date
+  nropallet         Int
+  variedad          String   @db.VarChar(45)
+  hora_final        DateTime @db.Time(0)
+  hora_inicio       DateTime @db.Time(0)
+  fecha_pallet      DateTime @db.Date
+  productor         String   @db.VarChar(45)
+  kg_neto           Decimal  @db.Decimal(7, 4)
+  fete              Int
+  kg_bueno          Decimal  @db.Decimal(7, 4)
+  total_procesados  Decimal  @db.Decimal(7, 4)
+  iqf_block         Decimal  @db.Decimal(7, 4)
+  caserola          String   @db.VarChar(45)
+  granel            Decimal  @db.Decimal(7, 4)
+  nropallet_cliente Int
+  cliente           String   @db.VarChar(45)
+  fecha_despacho    DateTime @db.Date
+}
+
+model tb_lineas {
+  id    Int    @id
+  linea String @db.VarChar(45)
+}
+
+model tb_mail {
+  id           String @id @db.Char(36)
+  nombre       String @db.VarChar(45)
+  apellido     String @db.VarChar(45)
+  mail         String @db.VarChar(45)
+  estado       BigInt
+  sincro       BigInt
+  lastmodified BigInt
+}
+
+model tb_orden {
+  idorden        Int      @id
+  fecha          DateTime @db.DateTime(0)
+  fecha_inicio   DateTime @db.DateTime(0)
+  fecha_termino  DateTime @db.DateTime(0)
+  fecha_despacho DateTime @db.Date
+  lot            Int
+  idcliente      Int
+  cliente        String   @db.VarChar(45)
+  iddestino      Int
+  destino        String   @db.VarChar(45)
+  state          Int
+  priority       Int
+  transporte     String   @db.VarChar(100)
+  obs            String   @db.MediumText
+  estado         Int
+}
+
+model tb_orden_detail {
+  id            Int     @id
+  idorden       Int
+  calidad       Int
+  idpunnet      Int
+  punnet        String  @db.VarChar(45)
+  weight_punnet Decimal @db.Decimal(4, 3)
+  carton_bax    Int
+  bax_pal       Int
+  pun_carton    Int
+  pun_total     Int
+  can_pal       Decimal @db.Decimal(3, 1)
+  kg_pal        Decimal @db.Decimal(10, 3)
+  label         Int
+  state         Int
+  estado        Int
+}
+
+model tb_paises {
+  idpais Int     @id @default(autoincrement())
+  pais   String? @db.VarChar(60)
+}
+
+model tb_place {
+  id     Int    @id
+  place  String @db.VarChar(45)
+  estado Int
+}
+
+model tb_preference {
+  id                Int @id @default(autoincrement())
+  max_delivery_bulk Int
+}
+
+model tb_proceso {
+  Id                 BigInt   @id @default(autoincrement())
+  id_orden           BigInt
+  linea              Int
+  id_pallet_delivery Int
+  codcaserola        String   @db.Char(36)
+  caserola           String   @db.VarChar(45)
+  cantidad_clamshell Int
+  kg                 Decimal  @db.Decimal(10, 4)
+  fecha_ini          DateTime @db.DateTime(0)
+  fecha_fin          DateTime @db.DateTime(0)
+  state              Int      @db.TinyInt
+  estado             Int      @db.TinyInt
+  sincro             Int      @db.TinyInt
+  lastmodified       BigInt
+}
+
+model tb_proceso_detalle {
+  id                 Int     @id @default(autoincrement())
+  id_proceso         Int
+  nr_pallet          Int
+  cantidad_clamshell Int
+  kg                 Decimal @db.Decimal(10, 4)
+  state              Int
+}
+
+model tb_producer_report {
+  nr_pallet      Int      @id
+  date_recepcion DateTime @db.Date
+  cod_productor  Int
+  productor      String   @db.VarChar(45)
+  kg_neto        Decimal  @db.Decimal(7, 4)
+  calidad        Decimal  @db.Decimal(7, 4)
+  left_over      Decimal  @db.Decimal(7, 4)
+  iqf            Decimal  @db.Decimal(7, 4)
+  wasted         Decimal  @db.Decimal(7, 4)
+}
+
+model tb_productores {
+  codigo         Int    @id
+  ggn            BigInt
+  productor      String @db.VarChar(200)
+  lot_name       String @db.VarChar(10)
+  certificadora  String @db.VarChar(45)
+  nr_certificado String @db.VarChar(45)
+  estado         Int
+}
+
+model tb_punnets {
+  idpunnet Int     @id
+  punnet   String  @db.VarChar(45)
+  tara     Decimal @db.Decimal(4, 3)
+  peso     Decimal @db.Decimal(4, 3)
+  casxbox  Int
+  boxpalet Int
+  estado   Int
+}
+
+model tb_recepcion {
+  codigo            String   @id @db.Char(36)
+  fecha             DateTime @db.DateTime(0)
+  nropallet         BigInt
+  cod_productor     Int
+  ggn               BigInt
+  productor         String   @db.VarChar(45)
+  ciudad            String   @db.VarChar(45)
+  plantacion        String   @db.VarChar(45)
+  centro            String   @db.VarChar(45)
+  idvariedad        Int
+  quality           Int
+  lot               String   @db.VarChar(15)
+  certificadora     String   @db.VarChar(45)
+  nr_certificado    String   @db.VarChar(45)
+  codbandeja        Int
+  nom_bandeja       String   @db.VarChar(45)
+  bandeja_tara      Decimal  @db.Decimal(7, 4)
+  cantidad_bandejas Int
+  codcaserola       String   @db.Char(36)
+  nom_caserola      String   @db.VarChar(45)
+  caserola_tara     Decimal  @db.Decimal(7, 4)
+  cantidad_caserola BigInt
+  tot_caserolas     BigInt
+  merma_porc        Int      @db.TinyInt
+  kg_bruto          Decimal  @db.Decimal(6, 3)
+  kg_bandeja        Decimal  @db.Decimal(6, 3)
+  kg_caserola       Decimal  @db.Decimal(6, 3)
+  kg_pallet         Decimal  @db.Decimal(6, 3)
+  kg_neto           Decimal  @db.Decimal(6, 3)
+  kg_merma          Decimal  @db.Decimal(6, 3)
+  kg_cmerma         Decimal  @db.Decimal(6, 3)
+  kg_fmerma         Decimal  @db.Decimal(6, 3)
+  box_disponible    Int      @default(0)
+  kg_disponible     Decimal  @db.Decimal(6, 3)
+  iqf               Decimal  @default(0.000) @db.Decimal(6, 3)
+  garbage           Decimal  @default(0.000) @db.Decimal(6, 3)
+  other             Decimal  @default(0.000) @db.Decimal(6, 3)
+  idpunnet_order    Int      @default(0)
+  state             Int      @db.TinyInt
+  idplace           Int      @default(0)
+  estado            Int      @db.TinyInt
+  obs               String?  @db.VarChar(150)
+
+  @@index([nropallet], map: "index01")
+}
+
+model tb_reception_asociados_order {
+  id                  Int      @id @default(autoincrement())
+  fecha               DateTime @db.DateTime(0)
+  idorden             Int
+  idpunnet            Int
+  nropallet_recepcion Int
+  estado              Int      @default(1)
+}
+
+model tb_report {
+  id      Int    @id @default(autoincrement())
+  reporte String @db.VarChar(45)
+}
+
+model tb_report_option {
+  id            Int    @id
+  codreporte    Int
+  columna       String @db.VarChar(45)
+  nombre_titulo String @db.VarChar(45)
+  ver           Int
+  GER           Int
+  VBM           Int
+  ROB           Int
+  ANDREEA       Int
+  ANA           Int
+  CAT           Int
+  IUL           Int
+  KAR           Int
+}
+
+model tb_sectores {
+  codsector    String @id @db.Char(36)
+  codcampo     String @db.Char(36)
+  sector       String @db.VarChar(45)
+  estado       Int    @db.TinyInt
+  sincro       Int    @db.TinyInt
+  lastmodified BigInt
+}
+
+model tb_states {
+  id    Int    @id
+  state String @db.VarChar(45)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model tb_temp_rfid {
+  rfid String @db.VarChar(45)
+
+  @@ignore
+}
+
+model tb_test {
+  id        Int     @id
+  decimales Decimal @db.Decimal(6, 3)
+}
+
+model tb_trabajadores {
+  serie_buletin String @id @db.VarChar(45)
+  rfid          String @db.VarChar(45)
+  nombre        String @db.VarChar(45)
+  apellido      String @db.VarChar(45)
+  ciudad        String @db.VarChar(45)
+
+  @@index([rfid], map: "index01")
+}
+
+model tb_transporte {
+  idtransporte Int    @id
+  transporte   String @db.VarChar(100)
+  estado       Int
+}
+
+model tb_typepallet {
+  id   Int    @id
+  Tipo String @db.VarChar(45)
+}
+
+model tb_usuarios {
+  id      Int    @id
+  nombre  String @db.VarChar(45)
+  usuario String @db.VarChar(45)
+  clave   String @db.VarChar(45)
+  acceso  Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tb_variedades {
+  idvariedad Int    @id
+  Variedad   String @db.VarChar(50)
+  Estado     Int    @db.TinyInt
+}
+
+model tb_version {
+  id           String @id @db.VarChar(45)
+  licencia     String @db.Char(36)
+  mac_id       String @db.VarChar(45)
+  equipo       String @db.VarChar(45)
+  year         Int
+  month        Int
+  version      Int
+  autorizado   Int    @default(0)
+  actualizar   Int    @default(0)
+  ftp_softagro String @db.VarChar(45)
+  usuario      String @db.VarChar(45)
+  destino      String @db.VarChar(45)
+  pass         String @db.VarChar(45)
+}
