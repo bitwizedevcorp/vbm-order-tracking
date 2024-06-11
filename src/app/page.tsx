@@ -1,5 +1,6 @@
+import RightSideContent from "@/components/content";
 import prisma from "../../lib/prisma";
-import {Card, CardHeader, CardBody, CardFooter, Divider, Link, Image} from "@nextui-org/react";
+import {Card, CardHeader, CardBody, CardFooter, Divider, Link, Image, Input} from "@nextui-org/react";
 
 const Home = async () => {
   // async function getClientFromDbWithState() {
@@ -206,7 +207,7 @@ const Home = async () => {
       </div>
       <div className="w-[65%] bg-white">
         <div className="p-4">
-          Right Content
+          <RightSideContent />
         </div>
       </div>
     </div>
