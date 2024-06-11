@@ -34,6 +34,7 @@ const Home = async () => {
   //     return [];
   //   }
   // }
+
   async function getClientFromDbWithState() {
     try {
       // Fetch orders with state 6
@@ -67,6 +68,8 @@ const Home = async () => {
           idorden: order.idorden,
           punnet: details ? details.punnet : null,
           carton_bax: details ? details.carton_bax : null,
+          idpunnet: details ? details.idpunnet : null,
+          can_pal: details ? details.can_pal : null,
         };
       });
 
@@ -88,14 +91,54 @@ const Home = async () => {
         idorden: true,
         punnet: true,
         carton_bax: true,
+        idpunnet: true,
+        can_pal: true,
       },
     });
 
     return orderDetails;
   }
 
+  async function insertForDeliveryPalet(object: any) {
+    const roundedRows = Math.ceil(object.can_pal);
+
+    for (let i = 0; i < roundedRows; i++) {
+      try {
+        const insertData = await prisma.tb_delivery_pallet.create({
+          data: {
+            idorden: object.idorden,
+            idpunnet_orden: object.idpunnet,
+            date_departure: object.fecha_despacho,
+            nrpallet: i + 1,
+            nr_bax: 0,
+            kg: 0,
+            quality: 0, // Placeholder value, replace with actual data
+            idtransport: 1, // Placeholder value, replace with actual data
+            patente: "default_patente", // Placeholder value, replace with actual data
+            state: 0, // Placeholder value, replace with actual data
+            estado: 0, // Placeholder value, replace with actual data
+          },
+        });
+        return insertData;
+      } catch (error) {
+        console.error(
+          "Error inserting delivery pallet for idorden:",
+          object.idorden,
+          "nrpallet:",
+          i + 1,
+          "Error:",
+          error
+        );
+      }
+    }
+  }
   const data = await getClientFromDbWithState();
-  console.log(data);
+
+  for (const n of data) {
+    const test = await insertForDeliveryPalet(n);
+    console.log(test);
+  }
+
   return (
     <div className="flex h-screen">
       <div className="w-40 overflow-y-auto bg-gray-200">
