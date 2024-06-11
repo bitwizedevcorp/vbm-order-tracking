@@ -1,4 +1,5 @@
 import prisma from "../../lib/prisma";
+import {Card, CardHeader, CardBody, CardFooter, Divider, Link, Image} from "@nextui-org/react";
 
 const Home = async () => {
   // async function getClientFromDbWithState() {
@@ -141,23 +142,72 @@ const Home = async () => {
 
   return (
     <div className="flex h-screen">
-      <div className="w-40 overflow-y-auto bg-gray-200">
-        {/* Left part */}
-        <div className="h-full">
-          {/* Content that needs to be scrollable */}
-          {/* Add your content here */}
-          <h1>Order 1</h1>
-          <h1>Order 2</h1>
+      <div className="w-[35%] bg-gray-100">
+        <div className="p-4">
+        <Card className="max-w-[400px]">
+          <CardHeader className="flex gap-3">
+            <Image
+              alt="nextui logo"
+              height={40}
+              radius="sm"
+              src="https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
+              width={40}
+            />
+            <div className="flex flex-col">
+              <p className="text-md"><b>Order id: </b>12</p>
+            </div>
+          </CardHeader>
+          <Divider/>
+          <CardBody>
+            <p><b>Client</b>: LIDL</p>
+            <Divider/>
+            <p><b>Destination</b>: Bucharest</p>
+          </CardBody>
+          <Divider/>
+          <CardFooter>
+            <p><b>Day departure</b>: 09.09.2020</p>
+          </CardFooter>
+        </Card>
+
+        <br></br>
+        <Divider />
+        <br></br>
+
+        <Card className="max-w-[400px]">
+          <CardHeader className="flex gap-3">
+            <Image
+              alt="nextui logo"
+              height={40}
+              radius="sm"
+              src="https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
+              width={40}
+            />
+            <div className="flex flex-col">
+              <p className="text-md"><b>Order id: </b>12</p>
+            </div>
+          </CardHeader>
+          <Divider/>
+          <CardBody>
+            <p><b>Client</b>: LIDL</p>
+            <Divider/>
+            <p><b>Destination</b>: Bucharest</p>
+          </CardBody>
+          <Divider/>
+          <CardFooter>
+            <p><b>Day departure</b>: 09.09.2020</p>
+          </CardFooter>
+        </Card>
+
+        <br></br>
+        <Divider />
+        <br></br>
+
         </div>
       </div>
-      <div className="flex-1 bg-gray-300">
-        {/* Right part */}
-        {/* Content for the right part */}
-        {/* Add your content here */}
-        <h1>
-          <input type="text" disabled value="Detail 1" /> <br></br>
-          <input type="text" disabled value="Detail 2" />
-        </h1>
+      <div className="w-[65%] bg-white">
+        <div className="p-4">
+          Right Content
+        </div>
       </div>
     </div>
   );
