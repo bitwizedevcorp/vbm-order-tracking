@@ -1,5 +1,6 @@
+import CardClient from "@/components/global/card/card";
 import prisma from "../../lib/prisma";
-import {Card, CardHeader, CardBody, CardFooter, Divider, Link, Image} from "@nextui-org/react";
+import RightSideContent from "@/components/global/right-side/rightside";
 
 const Home = async () => {
   // async function getClientFromDbWithState() {
@@ -133,80 +134,49 @@ const Home = async () => {
       }
     }
   }
-  const data = await getClientFromDbWithState();
+  // const data = await getClientFromDbWithState();
 
-  for (const n of data) {
-    const test = await insertForDeliveryPalet(n);
-    console.log(test);
+  // for (const n of data) {
+  //   const test = await insertForDeliveryPalet(n);
+  //   console.log(test);
+  // }
+
+  async function getClientWithSixState() {
+    try {
+      const client = await prisma.tb_orden.findMany({
+        where: {
+          state: 6,
+        },
+        select: {
+          cliente: true,
+          destino: true,
+          fecha_despacho: true,
+          idorden: true,
+        },
+      });
+      return client;
+    } catch (error) {
+      console.log(error);
+      return [];
+    }
   }
+
+  const data = await getClientWithSixState();
+  const formattedData = data.map((item) => ({
+    ...item,
+    fecha_despacho: item.fecha_despacho.toLocaleDateString(),
+  }));
 
   return (
     <div className="flex h-screen">
       <div className="w-[35%] bg-gray-100">
         <div className="p-4">
-        <Card className="max-w-[400px]">
-          <CardHeader className="flex gap-3">
-            <Image
-              alt="nextui logo"
-              height={40}
-              radius="sm"
-              src="https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
-              width={40}
-            />
-            <div className="flex flex-col">
-              <p className="text-md"><b>Order id: </b>12</p>
-            </div>
-          </CardHeader>
-          <Divider/>
-          <CardBody>
-            <p><b>Client</b>: LIDL</p>
-            <Divider/>
-            <p><b>Destination</b>: Bucharest</p>
-          </CardBody>
-          <Divider/>
-          <CardFooter>
-            <p><b>Day departure</b>: 09.09.2020</p>
-          </CardFooter>
-        </Card>
-
-        <br></br>
-        <Divider />
-        <br></br>
-
-        <Card className="max-w-[400px]">
-          <CardHeader className="flex gap-3">
-            <Image
-              alt="nextui logo"
-              height={40}
-              radius="sm"
-              src="https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
-              width={40}
-            />
-            <div className="flex flex-col">
-              <p className="text-md"><b>Order id: </b>12</p>
-            </div>
-          </CardHeader>
-          <Divider/>
-          <CardBody>
-            <p><b>Client</b>: LIDL</p>
-            <Divider/>
-            <p><b>Destination</b>: Bucharest</p>
-          </CardBody>
-          <Divider/>
-          <CardFooter>
-            <p><b>Day departure</b>: 09.09.2020</p>
-          </CardFooter>
-        </Card>
-
-        <br></br>
-        <Divider />
-        <br></br>
-
+          <CardClient clients={formattedData} />
         </div>
       </div>
       <div className="w-[65%] bg-white">
         <div className="p-4">
-          Right Content
+          <RightSideContent />
         </div>
       </div>
     </div>

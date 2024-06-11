@@ -4,6 +4,8 @@ import "./globals.css";
 import Navbar from "@/components/global/menu/menu";
 import Footer from "@/components/global/footer/footer";
 
+import { NextUIProvider } from "@nextui-org/react";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -20,7 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Navbar />
-        {children}
+        <NextUIProvider>{children}</NextUIProvider>
         <Footer />
       </body>
     </html>
