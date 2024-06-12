@@ -8,8 +8,15 @@ import {
   CardFooter,
   Input,
 } from "@nextui-org/react";
+import axios from "axios";
 
 const RightSideContent = ({ selectedOrder }: { selectedOrder: any }) => {
+  const handlerClickDeliveryPallet = async (idorden_idpunnet: any) => {
+    console.log(idorden_idpunnet);
+    const res = await axios.get(`/api/getDeliveryPallet/${idorden_idpunnet}`);
+    console.log("res", res.data);
+  };
+
   if (!selectedOrder || selectedOrder.length === 0) {
     return (
       <Card className="max-w-[600px]">
@@ -22,7 +29,6 @@ const RightSideContent = ({ selectedOrder }: { selectedOrder: any }) => {
       </Card>
     );
   }
-
   return (
     <div className="space-y-4">
       {selectedOrder.map((order: any, index: number) => (
@@ -87,6 +93,13 @@ const RightSideContent = ({ selectedOrder }: { selectedOrder: any }) => {
                 />
               </div>
             </div>
+            <button
+              onClick={() =>
+                handlerClickDeliveryPallet(order.idorden + "_" + order.id)
+              }
+            >
+              Get number_pallet
+            </button>
           </CardBody>
           <Divider />
           <CardFooter></CardFooter>

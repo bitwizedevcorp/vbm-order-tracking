@@ -20,7 +20,7 @@ const CardClient = ({
   const handleClick = async (id: number) => {
     try {
       const res = await axios.get(`/api/getOrderDetail/${id}`);
-      onOrderClick(res.data.orderDetail); // Assuming the response contains an orderDetail array with order details
+      onOrderClick(res.data.orderDetail);
     } catch (error) {
       console.log(error);
     }
