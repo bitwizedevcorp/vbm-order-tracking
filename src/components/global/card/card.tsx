@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import {
   Card,
   CardHeader,
@@ -10,17 +10,19 @@ import {
 } from "@nextui-org/react";
 import axios from "axios";
 
-const CardClient = ({ clients }: { clients: any[] }) => {
-  const [clickedData, setClickedData] = useState<any[]>([]);
-
+const CardClient = ({
+  clients,
+  onOrderClick,
+}: {
+  clients: any[];
+  onOrderClick: (order: any) => void;
+}) => {
   const handleClick = async (id: number) => {
     try {
       const res = await axios.get(`/api/getOrderDetail/${id}`);
-      console.log(res.data);
-      setClickedData(res.data);
+      onOrderClick(res.data.orderDetail); // Assuming the response contains an orderDetail array with order details
     } catch (error) {
       console.log(error);
-      setClickedData([]);
     }
   };
 
@@ -71,12 +73,6 @@ const CardClient = ({ clients }: { clients: any[] }) => {
           <br />
         </div>
       ))}
-      {clickedData.length > 0 && (
-        <div>
-          <h2>Clicked Data:</h2>
-          <pre>{JSON.stringify(clickedData, null, 2)}</pre>
-        </div>
-      )}
     </div>
   );
 };
