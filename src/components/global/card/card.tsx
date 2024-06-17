@@ -25,6 +25,17 @@ const CardClient = ({
       console.log(error);
     }
   };
+  if (clients.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Card className="max-w-[600px] mx-auto mt-4">
+          <CardHeader className="flex gap-3">
+            <b>No orders available</b>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  } 
 
   return (
     <div className="container mx-auto px-4">

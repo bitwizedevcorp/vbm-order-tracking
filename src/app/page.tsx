@@ -41,7 +41,7 @@ const Home = () => {
       </div>
       <div className="w-[65%] bg-white">
         <div className="p-4">
-          <RightSideContent selectedOrder={selectedOrder} />
+          <RightSideContent selectedOrder={selectedOrder} orderNumber={data.length}/>
         </div>
       </div>
     </div>
