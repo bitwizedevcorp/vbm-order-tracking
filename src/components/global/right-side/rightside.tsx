@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardBody,
@@ -7,14 +7,29 @@ import {
   Divider,
   CardFooter,
   Input,
+  Modal,
+  ModalHeader,
+  ModalContent,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
+  useDisclosure
 } from "@nextui-org/react";
 import axios from "axios";
 
 const RightSideContent = ({ selectedOrder, orderNumber }: { selectedOrder: any, orderNumber: any }) => {
+  const {isOpen, onOpen, onClose} = useDisclosure();
+  let arr: any[] = [];
+
   const handlerClickDeliveryPallet = async (idorden_idpunnet: any) => {
+    //Open modal
+    onOpen();
+    //Fetch data
     console.log(idorden_idpunnet);
     try {
       const res = await axios.get(`/api/getDeliveryPallet/${idorden_idpunnet}`);
+      arr = [...Array(4)].map((u, i) => i);
       console.log("res", res.data);
     } catch (error) {
       console.error("Error fetching delivery pallet", error);
@@ -113,6 +128,47 @@ const RightSideContent = ({ selectedOrder, orderNumber }: { selectedOrder: any, 
               >
                 Get number_pallet
               </button>
+              <>
+                <Modal
+                  size="full"
+                  isOpen={isOpen} 
+                  onClose={onClose} 
+                >
+                  <ModalContent>
+                    {(onClose) => (
+                      <>
+                        <ModalHeader className="flex flex-col gap-1">Table</ModalHeader>
+                        <ModalBody>
+                          <Table aria-label="Example static collection table">
+                            <TableHeader>
+                              <TableColumn>ID</TableColumn>
+                              <TableColumn>Something</TableColumn>
+                              <TableColumn>STATUS</TableColumn>
+                            </TableHeader>
+                            <TableBody>
+                              {arr.map((entry) => (
+                                <TableRow key={entry}>
+                                  <TableCell>Tony Reichert</TableCell>
+                                  <TableCell>CEO</TableCell>
+                                  <TableCell>Active</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </ModalBody>
+                        <ModalFooter>
+                          <Button color="danger" variant="light" onPress={onClose}>
+                            Close
+                          </Button>
+                          <Button color="primary" onPress={onClose}>
+                            Action
+                          </Button>
+                        </ModalFooter>
+                      </>
+                    )}
+                  </ModalContent>
+                </Modal>
+              </>
             </CardBody>
             <Divider />
             <CardFooter></CardFooter>
