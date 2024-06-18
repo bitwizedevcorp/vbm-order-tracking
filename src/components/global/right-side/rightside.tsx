@@ -31,14 +31,21 @@ const RightSideContent = ({
   selectedOrder: any;
   orderNumber: any;
 }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isMainModalOpen, setIsMainModalOpen] = useState(false);
+  const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
+
+  const handleMainModalOpen = () => setIsMainModalOpen(true);
+  const handleMainModalClose = () => setIsMainModalOpen(false);
+  
+  const handleSecondModalOpen = () => setIsSecondModalOpen(true);
+  const handleSecondModalClose = () => setIsSecondModalOpen(false);
 
   const [deliveryData, setDeliveryData] = useState([]);
   const [isModalSmallOpen, setIsModalSmallOpen] = useState(false);
 
   const handlerClickDeliveryPallet = async (idorden_idpunnet: any) => {
     // Open modal
-    onOpen();
+    handleMainModalOpen();
     // Fetch data
     try {
       const res = await axios.get(`/api/getDeliveryPallet/${idorden_idpunnet}`);
@@ -49,7 +56,7 @@ const RightSideContent = ({
   };
 
   const handleRowClick = (idorden_idpunnet: any) => {
-    <ModalSmall />;
+    handleSecondModalOpen();
   };
 
   if ((!selectedOrder || selectedOrder.length === 0) && orderNumber > 0) {
@@ -145,7 +152,7 @@ const RightSideContent = ({
                 Get number_pallet
               </button>
               <>
-                <Modal size="full" isOpen={isOpen} onClose={onClose}>
+                <Modal size="full" isOpen={isMainModalOpen} onClose={handleMainModalClose}>
                   <ModalContent>
                     {(onClose) => (
                       <>
@@ -196,6 +203,23 @@ const RightSideContent = ({
                           </Button>
                           <Button color="primary" onPress={onClose}>
                             Action
+                          </Button>
+                        </ModalFooter>
+                      </>
+                    )}
+                  </ModalContent>
+                </Modal>
+                <Modal isOpen={isSecondModalOpen} onClose={handleSecondModalClose}>
+                  <ModalContent>
+                    {(onClose) => (
+                      <>
+                        <ModalHeader className="flex flex-col gap-1">Secondary Modal</ModalHeader>
+                        <ModalBody>
+                          <p>This is the secondary modal.</p>
+                        </ModalBody>
+                        <ModalFooter>
+                          <Button color="danger" variant="light" onPress={onClose}>
+                            Close
                           </Button>
                         </ModalFooter>
                       </>
