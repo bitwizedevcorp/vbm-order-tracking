@@ -58,16 +58,20 @@ const RightSideContent = ({
   const handleRowClick = async (idorden_idpunnet: any, iddelivery: number) => {
     if (confirm("Do you want to start this dellivery pallet?")) {
       console.log(iddelivery);
-      await updateStateDeliveryPalett(iddelivery);
-      try {
-        const res = await axios.get(
-          `/api/getReceptionAsociadosOrder/${idorden_idpunnet}`
-        );
-        setSecondaryModalData(res.data); // Set the.data);
-      } catch (error) {
-        console.log("Error fetching row", error);
+      const res = await axios.get(`/api/updateDeliveryPalletState/${iddelivery}`);
+      console.log("Status query /api/updateDeliveryPalletState/", res.status);
+      
+      if (res.status === 200) {
+        try {
+          const res = await axios.get(
+            `/api/getReceptionAsociadosOrder/${idorden_idpunnet}`
+          );
+          setSecondaryModalData(res.data); // Set the.data);
+        } catch (error) {
+          console.log("Error fetching row", error);
+        }
+        handleSecondModalOpen();
       }
-      handleSecondModalOpen();
     }
   };
 
@@ -234,6 +238,8 @@ const RightSideContent = ({
                 <Modal
                   isOpen={isSecondModalOpen}
                   onClose={handleSecondModalClose}
+                  backdrop="blur"
+                  size="5xl"
                 >
                   <ModalContent>
                     {(onClose) => (
@@ -242,7 +248,30 @@ const RightSideContent = ({
                           Secondary Modal
                         </ModalHeader>
                         <ModalBody>
-                          <p>This is the secondary modal.</p>
+                        <Table>
+                          <TableHeader>
+                            <TableColumn> </TableColumn>
+                            <TableColumn>id</TableColumn>
+                            <TableColumn>fecha</TableColumn>
+                            <TableColumn>idorden</TableColumn>
+                            <TableColumn>idpunnet</TableColumn>
+                            <TableColumn>nropallet_recepcion</TableColumn>
+                            <TableColumn>estado</TableColumn>
+                          </TableHeader>
+                          <TableBody>
+                            {secondaryModalData.map((data: any) => (
+                              <TableRow>
+                                <TableCell>s</TableCell>
+                                <TableCell>{data.id}</TableCell>
+                                <TableCell>{data.fecha}</TableCell>
+                                <TableCell>{data.idorden}</TableCell>
+                                <TableCell>{data.idpunnet}</TableCell>
+                                <TableCell>{data.nropallet_recepcion}</TableCell>
+                                <TableCell>{data.estado}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
                         </ModalBody>
                         <ModalFooter>
                           <Button
