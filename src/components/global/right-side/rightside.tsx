@@ -19,6 +19,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  Checkbox,
   useDisclosure,
 } from "@nextui-org/react";
 import axios from "axios";
@@ -60,7 +61,7 @@ const RightSideContent = ({
       console.log(iddelivery);
       const res = await axios.get(`/api/updateDeliveryPalletState/${iddelivery}`);
       console.log("Status query /api/updateDeliveryPalletState/", res.status);
-      
+
       if (res.status === 200) {
         try {
           const res = await axios.get(
@@ -261,7 +262,9 @@ const RightSideContent = ({
                           <TableBody>
                             {secondaryModalData.map((data: any) => (
                               <TableRow>
-                                <TableCell>s</TableCell>
+                                <TableCell>
+                                  <Checkbox size="lg" value={data.id}></Checkbox>
+                                </TableCell>
                                 <TableCell>{data.id}</TableCell>
                                 <TableCell>{data.fecha}</TableCell>
                                 <TableCell>{data.idorden}</TableCell>
@@ -272,6 +275,7 @@ const RightSideContent = ({
                             ))}
                           </TableBody>
                         </Table>
+                        <Button onClick={() => {}} color="success">Use those boxes</Button>
                         </ModalBody>
                         <ModalFooter>
                           <Button
