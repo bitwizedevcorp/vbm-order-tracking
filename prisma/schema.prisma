@@ -5,7 +5,6 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = "mysql://root:fvzNtS4tPWnBydAEGBlzVess3hJMZEYYjkoUIpmTAfsBBc5j1n5gnGDN820S5dA6@49.12.66.12:7777/pacrumania"
-  //  url      = "mysql://root:Ferari99!!@127.0.0.1:3306/pacrumania"
 }
 
 model tb_bandejas {
@@ -42,6 +41,7 @@ model tb_centros {
 model tb_clientes {
   idcliente Int    @id
   cliente   String @db.VarChar(45)
+  mail      String @db.VarChar(80)
   estado    Int    @db.TinyInt
 }
 
@@ -228,6 +228,7 @@ model tb_productores {
   lot_name       String @db.VarChar(10)
   certificadora  String @db.VarChar(45)
   nr_certificado String @db.VarChar(45)
+  mail           String @db.VarChar(100)
   estado         Int
 }
 
