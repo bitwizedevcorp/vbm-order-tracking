@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -17,6 +17,8 @@ const CardClient = ({
   clients: any[];
   onOrderClick: (order: any) => void;
 }) => {
+  const [orderDetailsLoaded, setOrderDetailsLoaded] = useState<boolean>(false);
+  
   const handleClick = async (id: number) => {
     try {
       const res = await axios.get(`/api/getOrderDetail/${id}`);
@@ -25,57 +27,63 @@ const CardClient = ({
       console.log(error);
     }
   };
+  if (clients.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Card className="max-w-[600px] mx-auto mt-4">
+          <CardHeader className="flex gap-3">
+            <b>No orders available</b>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  } 
 
   return (
-    <div className="container mx-auto px-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {clients.map((client, index) => (
-          <div key={index} className="w-full">
-            <button
-              className="focus:outline-none w-full"
-              onClick={() => handleClick(client.idorden)}
-            >
-              <Card className="w-full">
-                <CardHeader className="flex gap-3">
-                  <Image
-                    alt="nextui logo"
-                    height={40}
-                    radius="sm"
-                    src="https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
-                    width={40}
-                  />
-                  <div className="flex flex-col">
-                    <p className="text-md">
-                      <b>Order id: </b>
-                      {client.idorden}
-                    </p>
-                  </div>
-                </CardHeader>
+    <>
+      {clients.map((client, index) => (
+        <div key={index} className="p-4">
+          <button
+            className="focus:outline-none w-full"
+            onClick={() => handleClick(client.idorden)}
+          >
+            <Card className="w-full">
+              <CardHeader className="flex gap-3">
+                <Image
+                  alt="nextui logo"
+                  height={40}
+                  radius="sm"
+                  src="https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
+                  width={40}
+                />
+                <div className="flex flex-col">
+                  <p className="text-md">
+                    <b>Order id: </b>
+                    {client.idorden}
+                  </p>
+                </div>
+              </CardHeader>
+              <Divider />
+              <CardBody>
+                <p>
+                  <b>Client</b>: {client.cliente}
+                </p>
                 <Divider />
-                <CardBody>
-                  <p>
-                    <b>Client</b>: {client.cliente}
-                  </p>
-                  <Divider />
-                  <p>
-                    <b>Destination</b>: {client.destino}
-                  </p>
-                </CardBody>
-                <Divider />
-                <CardFooter>
-                  <p>
-                    <b>Day departure</b>: {client.fecha_despacho}
-                  </p>
-                </CardFooter>
-              </Card>
-            </button>
-            <br />
-            <Divider />
-            <br />
-          </div>
-        ))}
-      </div>
-    </div>
+                <p>
+                  <b>Destination</b>: {client.destino}
+                </p>
+              </CardBody>
+              <Divider />
+              <CardFooter>
+                <p>
+                  <b>Day departure</b>: {client.fecha_despacho}
+                </p>
+              </CardFooter>
+            </Card>
+          </button>
+        </div>
+      ))}
+    </>
   );
 };
 
