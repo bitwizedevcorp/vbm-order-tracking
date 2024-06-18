@@ -13,27 +13,43 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-  Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
-  useDisclosure
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  useDisclosure,
 } from "@nextui-org/react";
 import axios from "axios";
+import ModalSmall from "../modal/Modal";
 
-const RightSideContent = ({ selectedOrder, orderNumber }: { selectedOrder: any, orderNumber: any }) => {
-  const {isOpen, onOpen, onClose} = useDisclosure();
-  let arr: any[] = [];
+const RightSideContent = ({
+  selectedOrder,
+  orderNumber,
+}: {
+  selectedOrder: any;
+  orderNumber: any;
+}) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const [deliveryData, setDeliveryData] = useState([]);
+  const [isModalSmallOpen, setIsModalSmallOpen] = useState(false);
 
   const handlerClickDeliveryPallet = async (idorden_idpunnet: any) => {
-    //Open modal
+    // Open modal
     onOpen();
-    //Fetch data
-    console.log(idorden_idpunnet);
+    // Fetch data
     try {
       const res = await axios.get(`/api/getDeliveryPallet/${idorden_idpunnet}`);
-      arr = [...Array(4)].map((u, i) => i);
-      console.log("res", res.data);
+      setDeliveryData(res.data); // Set the fetched data into state
     } catch (error) {
       console.error("Error fetching delivery pallet", error);
     }
+  };
+
+  const handleRowClick = (idorden_idpunnet: any) => {
+    <ModalSmall />;
   };
 
   if ((!selectedOrder || selectedOrder.length === 0) && orderNumber > 0) {
@@ -54,7 +70,7 @@ const RightSideContent = ({ selectedOrder, orderNumber }: { selectedOrder: any, 
   if (orderNumber > 0) {
     return (
       <div className="space-y-4 px-4">
-        {selectedOrder.map((order: any, index: number) => (
+        {selectedOrder.map((order: any, index: any) => (
           <Card key={index} className="max-w-[600px] mx-auto">
             <CardHeader className="flex gap-3">
               <b>Order details</b>
@@ -75,7 +91,7 @@ const RightSideContent = ({ selectedOrder, orderNumber }: { selectedOrder: any, 
                   />
                 </div>
               </div>
-  
+
               <div className="flex flex-wrap mb-4">
                 <div className="w-full sm:w-3/12 flex items-center">
                   <b>Punnet</b>
@@ -90,7 +106,7 @@ const RightSideContent = ({ selectedOrder, orderNumber }: { selectedOrder: any, 
                   />
                 </div>
               </div>
-  
+
               <div className="flex flex-wrap mb-4">
                 <div className="w-full sm:w-3/12 flex items-center">
                   <b>Carton bay</b>
@@ -105,7 +121,7 @@ const RightSideContent = ({ selectedOrder, orderNumber }: { selectedOrder: any, 
                   />
                 </div>
               </div>
-  
+
               <div className="flex flex-wrap mb-4">
                 <div className="w-full sm:w-3/12 flex items-center">
                   <b>Number pallet</b>
@@ -129,35 +145,53 @@ const RightSideContent = ({ selectedOrder, orderNumber }: { selectedOrder: any, 
                 Get number_pallet
               </button>
               <>
-                <Modal
-                  size="full"
-                  isOpen={isOpen} 
-                  onClose={onClose} 
-                >
+                <Modal size="full" isOpen={isOpen} onClose={onClose}>
                   <ModalContent>
                     {(onClose) => (
                       <>
-                        <ModalHeader className="flex flex-col gap-1">Table</ModalHeader>
-                        <ModalBody>
+                        <ModalHeader className="flex flex-col gap-1">
+                          Table
+                        </ModalHeader>
+                        <ModalBody
+                          style={{ maxHeight: "80vh", overflow: "auto" }}
+                        >
                           <Table aria-label="Example static collection table">
                             <TableHeader>
                               <TableColumn>ID</TableColumn>
-                              <TableColumn>Something</TableColumn>
-                              <TableColumn>STATUS</TableColumn>
+                              <TableColumn>Nr Pallet</TableColumn>
+                              <TableColumn>Nr Bax</TableColumn>
+                              <TableColumn>KG</TableColumn>
+                              <TableColumn>Bax Added</TableColumn>
+                              <TableColumn>Status</TableColumn>
                             </TableHeader>
                             <TableBody>
-                              {arr.map((entry) => (
-                                <TableRow key={entry}>
-                                  <TableCell>Tony Reichert</TableCell>
-                                  <TableCell>CEO</TableCell>
-                                  <TableCell>Active</TableCell>
+                              {deliveryData.map((entry: any) => (
+                                <TableRow
+                                  key={entry.iddelivery}
+                                  onClick={() =>
+                                    handleRowClick(
+                                      order.idorden + "_" + order.id
+                                    )
+                                  }
+                                  style={{ cursor: "pointer" }}
+                                >
+                                  <TableCell>{entry.iddelivery}</TableCell>
+                                  <TableCell>{entry.nrpallet}</TableCell>
+                                  <TableCell>{entry.nr_bax}</TableCell>
+                                  <TableCell>{entry.kg}</TableCell>
+                                  <TableCell>{entry.bax_add}</TableCell>
+                                  <TableCell>{entry.state}</TableCell>
                                 </TableRow>
                               ))}
                             </TableBody>
                           </Table>
                         </ModalBody>
                         <ModalFooter>
-                          <Button color="danger" variant="light" onPress={onClose}>
+                          <Button
+                            color="danger"
+                            variant="light"
+                            onPress={onClose}
+                          >
                             Close
                           </Button>
                           <Button color="primary" onPress={onClose}>
@@ -174,12 +208,15 @@ const RightSideContent = ({ selectedOrder, orderNumber }: { selectedOrder: any, 
             <CardFooter></CardFooter>
           </Card>
         ))}
+        {/* {isModalSmallOpen && (
+          <ModalSmall onClose={() => setIsModalSmallOpen(false)} />
+        )}{" "}
+        else */}
       </div>
     );
   }
 
-  return (<></>);
-  
+  return <></>;
 };
 
 export default RightSideContent;

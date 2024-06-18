@@ -15,7 +15,6 @@ const Home = () => {
       try {
         const res = await axios.get("/api/getClientWithSixState");
         const clientData = res.data;
-        console.log("aiciiii", clientData);
 
         const formattedData = clientData.map((item: any) => ({
           ...item,
@@ -38,8 +37,7 @@ const Home = () => {
   return (
     <div className="flex h-screen">
       <div className="w-[35%] bg-gray-100">
-        {
-          !ordersLoaded ? 
+        {!ordersLoaded ? (
           <div className="p-4 flex justify-center">
             <Progress
               size="sm"
@@ -49,13 +47,16 @@ const Home = () => {
               className="max-w-md"
             />
           </div>
-          : 
+        ) : (
           <CardClient clients={data} onOrderClick={handleOrderClick} />
-        }
+        )}
       </div>
       <div className="w-[65%] bg-white">
         <div className="p-4">
-          <RightSideContent selectedOrder={selectedOrder} orderNumber={data.length}/>
+          <RightSideContent
+            selectedOrder={selectedOrder}
+            orderNumber={data.length}
+          />
         </div>
       </div>
     </div>
