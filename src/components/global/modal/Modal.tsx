@@ -44,7 +44,7 @@ const ModalSmall = () => {
               </ModalHeader>
               <ModalBody>
                 {deliveryData.length > 0 ? (
-                  deliveryData.map((data) => (
+                  deliveryData.map((data: any) => (
                     <p key={data.id}>{JSON.stringify(data)}</p>
                   ))
                 ) : (

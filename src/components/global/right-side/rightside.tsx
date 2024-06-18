@@ -23,6 +23,7 @@ import {
 } from "@nextui-org/react";
 import axios from "axios";
 import ModalSmall from "../modal/Modal";
+import { updateStateDeliveryPalett } from "@/lib/actions";
 
 const RightSideContent = ({
   selectedOrder,
@@ -36,13 +37,12 @@ const RightSideContent = ({
 
   const handleMainModalOpen = () => setIsMainModalOpen(true);
   const handleMainModalClose = () => setIsMainModalOpen(false);
-  
+
   const handleSecondModalOpen = () => setIsSecondModalOpen(true);
   const handleSecondModalClose = () => setIsSecondModalOpen(false);
 
   const [deliveryData, setDeliveryData] = useState([]);
-  const [isModalSmallOpen, setIsModalSmallOpen] = useState(false);
-
+  const [secondaryModalData, setSecondaryModalData] = useState([]);
   const handlerClickDeliveryPallet = async (idorden_idpunnet: any) => {
     // Open modal
     handleMainModalOpen();
@@ -55,8 +55,20 @@ const RightSideContent = ({
     }
   };
 
-  const handleRowClick = (idorden_idpunnet: any) => {
-    handleSecondModalOpen();
+  const handleRowClick = async (idorden_idpunnet: any, iddelivery: number) => {
+    if (confirm("Do you want to start this dellivery pallet?")) {
+      console.log(iddelivery);
+      await updateStateDeliveryPalett(iddelivery);
+      try {
+        const res = await axios.get(
+          `/api/getReceptionAsociadosOrder/${idorden_idpunnet}`
+        );
+        setSecondaryModalData(res.data); // Set the.data);
+      } catch (error) {
+        console.log("Error fetching row", error);
+      }
+      handleSecondModalOpen();
+    }
   };
 
   if ((!selectedOrder || selectedOrder.length === 0) && orderNumber > 0) {
@@ -152,7 +164,11 @@ const RightSideContent = ({
                 Get number_pallet
               </button>
               <>
-                <Modal size="full" isOpen={isMainModalOpen} onClose={handleMainModalClose}>
+                <Modal
+                  size="full"
+                  isOpen={isMainModalOpen}
+                  onClose={handleMainModalClose}
+                >
                   <ModalContent>
                     {(onClose) => (
                       <>
@@ -170,24 +186,30 @@ const RightSideContent = ({
                               <TableColumn>KG</TableColumn>
                               <TableColumn>Bax Added</TableColumn>
                               <TableColumn>Status</TableColumn>
+                              <TableColumn>Select</TableColumn>
                             </TableHeader>
                             <TableBody>
                               {deliveryData.map((entry: any) => (
-                                <TableRow
-                                  key={entry.iddelivery}
-                                  onClick={() =>
-                                    handleRowClick(
-                                      order.idorden + "_" + order.id
-                                    )
-                                  }
-                                  style={{ cursor: "pointer" }}
-                                >
+                                <TableRow key={entry.iddelivery}>
                                   <TableCell>{entry.iddelivery}</TableCell>
                                   <TableCell>{entry.nrpallet}</TableCell>
                                   <TableCell>{entry.nr_bax}</TableCell>
                                   <TableCell>{entry.kg}</TableCell>
                                   <TableCell>{entry.bax_add}</TableCell>
                                   <TableCell>{entry.state}</TableCell>
+                                  <TableCell>
+                                    <Button
+                                      color="primary"
+                                      onClick={() => {
+                                        handleRowClick(
+                                          order.idorden + "_" + order.id,
+                                          entry.iddelivery
+                                        );
+                                      }}
+                                    >
+                                      Select dellivery
+                                    </Button>
+                                  </TableCell>
                                 </TableRow>
                               ))}
                             </TableBody>
@@ -209,16 +231,25 @@ const RightSideContent = ({
                     )}
                   </ModalContent>
                 </Modal>
-                <Modal isOpen={isSecondModalOpen} onClose={handleSecondModalClose}>
+                <Modal
+                  isOpen={isSecondModalOpen}
+                  onClose={handleSecondModalClose}
+                >
                   <ModalContent>
                     {(onClose) => (
                       <>
-                        <ModalHeader className="flex flex-col gap-1">Secondary Modal</ModalHeader>
+                        <ModalHeader className="flex flex-col gap-1">
+                          Secondary Modal
+                        </ModalHeader>
                         <ModalBody>
                           <p>This is the secondary modal.</p>
                         </ModalBody>
                         <ModalFooter>
-                          <Button color="danger" variant="light" onPress={onClose}>
+                          <Button
+                            color="danger"
+                            variant="light"
+                            onPress={onClose}
+                          >
                             Close
                           </Button>
                         </ModalFooter>
