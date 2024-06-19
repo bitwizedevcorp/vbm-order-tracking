@@ -8,6 +8,7 @@ export async function GET(
   const [idorden, idpunnet] = params.idorden_idpunnet.split("_");
 
   try {
+    // Fetch the associated orders
     const data = await prisma.tb_reception_asociados_order.findMany({
       where: {
         idorden: Number(idorden),
@@ -15,9 +16,45 @@ export async function GET(
       },
     });
 
-    console.log(data);
+    // Extract pallet numbers from the associated orders
+    const ids = data.map((nrPallet) => nrPallet.nropallet_recepcion);
 
-    return NextResponse.json(data);
+    // Fetch the reception info for the extracted pallet numbers
+    const infoFromReception = await prisma.tb_recepcion.findMany({
+      where: {
+        nropallet: {
+          in: ids,
+        },
+      },
+      select: {
+        nropallet: true, // Include nropallet to match with the associated orders
+        box_disponible: true,
+        kg_disponible: true,
+      },
+    });
+
+    // Create a map for quick lookup of reception info by pallet number
+    const receptionInfoMap: {
+      [key: string]: { box_disponible: number; kg_disponible: number };
+    } = infoFromReception.reduce((acc: { [key: string]: any }, info) => {
+      acc[info.nropallet.toString()] = info;
+      return acc;
+    }, {});
+
+    // Combine the associated orders with the corresponding reception info
+    const combinedData = data.map((order) => ({
+      ...order,
+      box_disponible:
+        receptionInfoMap[order.nropallet_recepcion.toString()]
+          ?.box_disponible || 0,
+      kg_disponible:
+        receptionInfoMap[order.nropallet_recepcion.toString()]?.kg_disponible ||
+        0,
+    }));
+
+    console.log(combinedData);
+
+    return NextResponse.json(combinedData);
   } catch (error) {
     console.error("Error fetching data:", error);
     return NextResponse.json(
