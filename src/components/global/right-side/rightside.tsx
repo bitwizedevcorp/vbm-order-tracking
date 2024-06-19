@@ -54,6 +54,8 @@ const RightSideContent = ({
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [currentOrderInfo, setCurrentOrderInfo] = useState<any>({});
   const [nrPalletDelivery, setNrPalletDelivery] = useState("");
+  const [linesAvailable, setLinesAvailable] = useState<any[]>([]);
+  const [selectedLine, setSelectedLine] = useState('');
 
   console.log("Order details loaded from rightside: ", orderDetailsLoaded);
 
@@ -104,51 +106,14 @@ const RightSideContent = ({
   };
 
   const handleSecondaryModalButtonClick = async () => {
-    handleThirdModalOpen();
-    const { idorden_idpunnet } = currentOrderInfo; // Assuming currentOrderInfo is defined elsewhere
-    let workLine = "";
-    const payload = {
-      idorden_idpunnet,
-      selectedRows,
-      workLine,
-      nrPalletDelivery,
-    };
-
-    console.log("Payload before prompt:", payload);
-
-    let line = "1";
-
-    payload.workLine = line;
-
-    console.log(payload);
-
-    for (const row of payload.selectedRows) {
-      let id = row.nropallet_recepcion;
-      try {
-        const res = await axios.get(`/api/updateReceptionState/${id}`);
-        console.log(
-          "Updated reception state for ID:",
-          id,
-          "Response:",
-          res.data
-        );
-      } catch (error) {
-        console.error("Error updating reception state:", error);
-        alert("Can not update reception state");
-        return;
-      }
-    }
-
     try {
-      const res = await axios.post("/api/deliveryReception/", { payload });
-      if (res.status === 200) {
-        alert("Success: Data added successfully");
-      } else {
-        alert("Error: Incorrect number of lines or something went wrong");
-      }
+      const res = await axios.get("/api/getLines");
+      console.log(res.data);
+      setLinesAvailable(res.data);
     } catch (error) {
-      console.error("Error:", error);
+      console.log("Error at fetching lines from dbs", error);
     }
+    handleThirdModalOpen();
   };
 
   const renderStatusCell = (data: any): JSX.Element => {
@@ -192,8 +157,61 @@ const RightSideContent = ({
     return date.toLocaleDateString('en-GB'); 
   };
 
-  const handleAddLineButton = (data: any) => {
+  const handleSelectChange = (event: any) => {
+    setSelectedLine(event.target.value);
+  };
+
+  const handleAddLineButton = async (data: any) => {
     //validate input
+    let inputIsOk: boolean = true;
+    if (selectedLine === '') {
+      inputIsOk = false;
+    }
+
+    if (inputIsOk) {
+      const { idorden_idpunnet } = currentOrderInfo; // Assuming currentOrderInfo is defined elsewhere
+      let workLine = "";
+      const payload = {
+        idorden_idpunnet,
+        selectedRows,
+        workLine,
+        nrPalletDelivery,
+      };
+
+      console.log("Payload before prompt:", payload);
+
+      payload.workLine = selectedLine;
+
+      console.log(payload);
+
+      for (const row of payload.selectedRows) {
+        let id = row.nropallet_recepcion;
+        try {
+          const res = await axios.get(`/api/updateReceptionState/${id}`);
+          console.log(
+            "Updated reception state for ID:",
+            id,
+            "Response:",
+            res.data
+          );
+        } catch (error) {
+          console.error("Error updating reception state:", error);
+          alert("Can not update reception state");
+          return;
+        }
+      }
+
+      try {
+        const res = await axios.post("/api/deliveryReception/", { payload });
+        if (res.status === 200) {
+          alert("Success: Data added successfully");
+        } else {
+          alert("Error: Incorrect number of lines or something went wrong");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
 
     //close modal 3
     handleThirdModalClose();
@@ -477,13 +495,16 @@ const RightSideContent = ({
                         <ModalHeader className="flex flex-col gap-1">Select a line</ModalHeader>
                         <ModalBody>
                         <Select
+                          items={linesAvailable}
                           label="Select"
                           placeholder="Select a line"
                           className="max-w-xs"
                           style={{ backgroundColor: '#19172c', color: '#a8b0d3', border: '1px solid #292f46', borderRadius: '4px' }}
+                          onChange={handleSelectChange}
                         >
-                          <SelectItem key={"uniquesomething"}>Linia 1</SelectItem>
-                          <SelectItem key={"uniquesomething2"}>Linia 2</SelectItem>
+                          {linesAvailable.map((data: any) => (
+                            <SelectItem key={data.id}>{data.linea}</SelectItem>
+                          ))}
                         </Select>
                         </ModalBody>
                         <ModalFooter>
