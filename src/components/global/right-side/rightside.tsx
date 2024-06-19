@@ -44,35 +44,102 @@ const RightSideContent = ({
 
   const [deliveryData, setDeliveryData] = useState([]);
   const [secondaryModalData, setSecondaryModalData] = useState([]);
+  const [selectedRows, setSelectedRows] = useState<any[]>([]);
+  const [currentOrderInfo, setCurrentOrderInfo] = useState<any>({});
+  const [nrPalletDelivery, setNrPalletDelivery] = useState("");
+
   const handlerClickDeliveryPallet = async (idorden_idpunnet: any) => {
-    // Open modal
     handleMainModalOpen();
-    // Fetch data
     try {
       const res = await axios.get(`/api/getDeliveryPallet/${idorden_idpunnet}`);
-      setDeliveryData(res.data); // Set the fetched data into state
+      setDeliveryData(res.data);
     } catch (error) {
       console.error("Error fetching delivery pallet", error);
     }
   };
 
-  const handleRowClick = async (idorden_idpunnet: any, iddelivery: number) => {
-    if (confirm("Do you want to start this dellivery pallet?")) {
-      console.log(iddelivery);
-      const res = await axios.get(`/api/updateDeliveryPalletState/${iddelivery}`);
-      console.log("Status query /api/updateDeliveryPalletState/", res.status);
+  const handleRowClick = async (
+    idorden_idpunnet: any,
+    iddelivery: number,
+    nrpallet: string
+  ) => {
+    if (confirm("Do you want to start this delivery pallet?")) {
+      const res = await axios.get(
+        `/api/updateDeliveryPalletState/${iddelivery}`
+      );
 
       if (res.status === 200) {
         try {
           const res = await axios.get(
             `/api/getReceptionAsociadosOrder/${idorden_idpunnet}`
           );
-          setSecondaryModalData(res.data); // Set the.data);
+          setSecondaryModalData(res.data);
+          setCurrentOrderInfo({ idorden_idpunnet, iddelivery });
+          setNrPalletDelivery(nrpallet); //
         } catch (error) {
-          console.log("Error fetching row", error);
+          console.error("Error fetching row", error);
         }
         handleSecondModalOpen();
       }
+    }
+  };
+
+  const handleCheckboxChange = (data: any, checked: boolean) => {
+    if (checked) {
+      setSelectedRows([...selectedRows, data]);
+    } else {
+      setSelectedRows(selectedRows.filter((row) => row.id !== data.id));
+    }
+  };
+
+  const handleSecondaryModalButtonClick = async () => {
+    const { idorden_idpunnet } = currentOrderInfo; // Assuming currentOrderInfo is defined elsewhere
+    let workLine = "";
+    const payload = {
+      idorden_idpunnet,
+      selectedRows,
+      workLine,
+      nrPalletDelivery,
+    };
+
+    console.log("Payload before prompt:", payload);
+
+    let line = prompt("Please enter line:");
+    if (line === null || line === "") {
+      console.log("User cancelled the prompt.");
+      return;
+    }
+
+    payload.workLine = line;
+
+    console.log(payload);
+
+    for (const row of payload.selectedRows) {
+      let id = row.nropallet_recepcion;
+      try {
+        const res = await axios.get(`/api/updateReceptionState/${id}`);
+        console.log(
+          "Updated reception state for ID:",
+          id,
+          "Response:",
+          res.data
+        );
+      } catch (error) {
+        console.error("Error updating reception state:", error);
+        alert("Can not update reception state");
+        return;
+      }
+    }
+
+    try {
+      const res = await axios.post("/api/deliveryReception/", { payload });
+      if (res.status === 200) {
+        alert("Success: Data added successfully");
+      } else {
+        alert("Error: Incorrect number of lines or something went wrong");
+      }
+    } catch (error) {
+      console.error("Error:", error);
     }
   };
 
@@ -208,11 +275,12 @@ const RightSideContent = ({
                                       onClick={() => {
                                         handleRowClick(
                                           order.idorden + "_" + order.id,
-                                          entry.iddelivery
+                                          entry.iddelivery,
+                                          entry.nrpallet
                                         );
                                       }}
                                     >
-                                      Select dellivery
+                                      Select delivery
                                     </Button>
                                   </TableCell>
                                 </TableRow>
@@ -249,33 +317,49 @@ const RightSideContent = ({
                           Secondary Modal
                         </ModalHeader>
                         <ModalBody>
-                        <Table>
-                          <TableHeader>
-                            <TableColumn> </TableColumn>
-                            <TableColumn>id</TableColumn>
-                            <TableColumn>fecha</TableColumn>
-                            <TableColumn>idorden</TableColumn>
-                            <TableColumn>idpunnet</TableColumn>
-                            <TableColumn>nropallet_recepcion</TableColumn>
-                            <TableColumn>estado</TableColumn>
-                          </TableHeader>
-                          <TableBody>
-                            {secondaryModalData.map((data: any) => (
-                              <TableRow>
-                                <TableCell>
-                                  <Checkbox size="lg" value={data.id}></Checkbox>
-                                </TableCell>
-                                <TableCell>{data.id}</TableCell>
-                                <TableCell>{data.fecha}</TableCell>
-                                <TableCell>{data.idorden}</TableCell>
-                                <TableCell>{data.idpunnet}</TableCell>
-                                <TableCell>{data.nropallet_recepcion}</TableCell>
-                                <TableCell>{data.estado}</TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                        <Button onClick={() => {}} color="success">Use those boxes</Button>
+                          <Table>
+                            <TableHeader>
+                              <TableColumn> </TableColumn>
+                              <TableColumn>id</TableColumn>
+                              <TableColumn>fecha</TableColumn>
+                              <TableColumn>idorden</TableColumn>
+                              <TableColumn>idpunnet</TableColumn>
+                              <TableColumn>nropallet_recepcion</TableColumn>
+                              <TableColumn>estado</TableColumn>
+                            </TableHeader>
+                            <TableBody>
+                              {secondaryModalData.map((data: any) => (
+                                <TableRow key={data.id}>
+                                  <TableCell>
+                                    <Checkbox
+                                      size="lg"
+                                      value={data.id}
+                                      onChange={(e) =>
+                                        handleCheckboxChange(
+                                          data,
+                                          e.target.checked
+                                        )
+                                      }
+                                    ></Checkbox>
+                                  </TableCell>
+                                  <TableCell>{data.id}</TableCell>
+                                  <TableCell>{data.fecha}</TableCell>
+                                  <TableCell>{data.idorden}</TableCell>
+                                  <TableCell>{data.idpunnet}</TableCell>
+                                  <TableCell>
+                                    {data.nropallet_recepcion}
+                                  </TableCell>
+                                  <TableCell>{data.estado}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                          <Button
+                            onClick={handleSecondaryModalButtonClick}
+                            color="success"
+                          >
+                            Use selected boxes
+                          </Button>
                         </ModalBody>
                         <ModalFooter>
                           <Button
@@ -296,10 +380,6 @@ const RightSideContent = ({
             <CardFooter></CardFooter>
           </Card>
         ))}
-        {/* {isModalSmallOpen && (
-          <ModalSmall onClose={() => setIsModalSmallOpen(false)} />
-        )}{" "}
-        else */}
       </div>
     );
   }

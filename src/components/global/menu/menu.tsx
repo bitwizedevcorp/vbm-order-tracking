@@ -3,7 +3,8 @@
 import * as React from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
-
+import Image from "next/image";
+import logoImg from "./vbmLogo.jpeg";
 const Navbar = () => {
   const [state, setState] = React.useState(false);
 
@@ -13,13 +14,12 @@ const Navbar = () => {
     { title: "About Us", path: "/your-path" },
     { title: "Contact Us", path: "/your-path" },
   ];
-
   return (
     <nav className="bg-white w-full border-b md:border-0">
       <div className="items-center px-4 max-w-screen-xl mx-auto md:flex md:px-8">
         <div className="flex items-center justify-between py-3 md:py-5 md:block">
           <Link href="/">
-            <h1 className="text-3xl font-bold text-red-600">Logo</h1>
+            <Image src={logoImg} width={100} height={100} alt="logo" />
           </Link>
           <div className="md:hidden">
             <button
