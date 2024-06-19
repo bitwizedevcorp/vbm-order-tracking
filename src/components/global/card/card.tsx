@@ -22,6 +22,7 @@ const CardClient = ({
   
   const handleClick = async (id: number) => {
     orderDetailsLoadedCallback(false);
+    onOrderClick({"dummy": "dummy"}); // Send a dummy object for the loading screen to be triggered. If statement needs a non-empty variable to check for loading rendering
     try {
       const res = await axios.get(`/api/getOrderDetail/${id}`);
       onOrderClick(res.data.orderDetail);
@@ -30,6 +31,7 @@ const CardClient = ({
       console.log(error);
     }
   };
+
   if (clients.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen">

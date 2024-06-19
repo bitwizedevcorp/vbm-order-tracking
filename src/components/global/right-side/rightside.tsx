@@ -25,8 +25,6 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import axios from "axios";
-import ModalSmall from "../modal/Modal";
-import { updateStateDeliveryPalett } from "@/lib/actions";
 
 const RightSideContent = ({
   selectedOrder,
@@ -51,7 +49,9 @@ const RightSideContent = ({
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [currentOrderInfo, setCurrentOrderInfo] = useState<any>({});
   const [nrPalletDelivery, setNrPalletDelivery] = useState("");
+  
   console.log("Order details loaded from rightside: ", orderDetailsLoaded);
+  
   const handlerClickDeliveryPallet = async (idorden_idpunnet: any) => {
     handleMainModalOpen();
     try {
@@ -176,6 +176,25 @@ const RightSideContent = ({
     )                        
   };
 
+  useEffect(() => {
+    if (isMainModalOpen) {
+      const interval = setInterval(async () => {
+        if (currentOrderInfo.idorden_idpunnet) {
+          try {
+            const res = await axios.get(
+              `/api/getDeliveryPallet/${currentOrderInfo.idorden_idpunnet}`
+            );
+            setDeliveryData(res.data);
+          } catch (error) {
+            console.error("Error fetching delivery data", error);
+          }
+        }
+      }, 20000);
+
+      return () => clearInterval(interval);
+    }
+  }, [isMainModalOpen, currentOrderInfo]);
+
   if ((!selectedOrder || selectedOrder.length === 0) && orderNumber > 0) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -297,7 +316,6 @@ const RightSideContent = ({
                         >
                           <Table aria-label="Example static collection table">
                             <TableHeader>
-                              <TableColumn>ID</TableColumn>
                               <TableColumn>Nr Pallet</TableColumn>
                               <TableColumn>Nr Bax</TableColumn>
                               <TableColumn>KG</TableColumn>
@@ -308,7 +326,6 @@ const RightSideContent = ({
                             <TableBody>
                               {deliveryData.map((entry: any) => (
                                 <TableRow key={entry.iddelivery}>
-                                  <TableCell>{entry.iddelivery}</TableCell>
                                   <TableCell>{entry.nrpallet}</TableCell>
                                   <TableCell>{entry.nr_bax}</TableCell>
                                   <TableCell>{entry.kg}</TableCell>
