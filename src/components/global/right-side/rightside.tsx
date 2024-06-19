@@ -185,6 +185,11 @@ const RightSideContent = ({
     );
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB'); // en-GB locale for dd/mm/yyyy format
+  };
+
   useEffect(() => {
     if (isMainModalOpen) {
       const interval = setInterval(async () => {
@@ -412,9 +417,8 @@ const RightSideContent = ({
                                       }
                                     ></Checkbox>
                                   </TableCell>
-                                  <TableCell>{data.fecha}</TableCell>
+                                  <TableCell>{formatDate(data.fecha)}</TableCell>
                                   <TableCell>{data.kg_disponible}</TableCell>
-
                                   <TableCell>{data.box_disponible}</TableCell>
                                   <TableCell>
                                     {data.nropallet_recepcion}
