@@ -23,8 +23,6 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import axios from "axios";
-import ModalSmall from "../modal/Modal";
-import { updateStateDeliveryPalett } from "@/lib/actions";
 
 const RightSideContent = ({
   selectedOrder,
@@ -142,6 +140,23 @@ const RightSideContent = ({
       console.error("Error:", error);
     }
   };
+
+  useEffect(() => {
+    if (isMainModalOpen) {
+      const interval = setInterval(async () => {
+        try {
+          const res = await axios.get(
+            `/api/getDeliveryPallet/${currentOrderInfo.idorden_idpunnet}`
+          );
+          setDeliveryData(res.data);
+        } catch (error) {
+          console.error("Error fetching delivery data", error);
+        }
+      }, 5000);
+
+      return () => clearInterval(interval);
+    }
+  }, [isMainModalOpen, currentOrderInfo]);
 
   if ((!selectedOrder || selectedOrder.length === 0) && orderNumber > 0) {
     return (
