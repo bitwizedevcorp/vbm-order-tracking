@@ -22,6 +22,8 @@ import {
   Checkbox,
   Chip,
   Progress,
+  Select,
+  SelectItem,
   useDisclosure,
 } from "@nextui-org/react";
 import axios from "axios";
@@ -37,12 +39,15 @@ const RightSideContent = ({
 }) => {
   const [isMainModalOpen, setIsMainModalOpen] = useState(false);
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
-
+  const [isThirdModalOpen, setIsThirdModalOpen] = useState(false);
   const handleMainModalOpen = () => setIsMainModalOpen(true);
   const handleMainModalClose = () => setIsMainModalOpen(false);
 
   const handleSecondModalOpen = () => setIsSecondModalOpen(true);
   const handleSecondModalClose = () => setIsSecondModalOpen(false);
+
+  const handleThirdModalOpen = () => setIsThirdModalOpen(true);
+  const handleThirdModalClose = () => setIsThirdModalOpen(false);
 
   const [deliveryData, setDeliveryData] = useState([]);
   const [secondaryModalData, setSecondaryModalData] = useState([]);
@@ -99,6 +104,7 @@ const RightSideContent = ({
   };
 
   const handleSecondaryModalButtonClick = async () => {
+    handleThirdModalOpen();
     const { idorden_idpunnet } = currentOrderInfo; // Assuming currentOrderInfo is defined elsewhere
     let workLine = "";
     const payload = {
@@ -110,11 +116,7 @@ const RightSideContent = ({
 
     console.log("Payload before prompt:", payload);
 
-    let line = prompt("Please enter line:");
-    if (line === null || line === "") {
-      console.log("User cancelled the prompt.");
-      return;
-    }
+    let line = "1";
 
     payload.workLine = line;
 
@@ -187,7 +189,14 @@ const RightSideContent = ({
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB'); // en-GB locale for dd/mm/yyyy format
+    return date.toLocaleDateString('en-GB'); 
+  };
+
+  const handleAddLineButton = (data: any) => {
+    //validate input
+
+    //close modal 3
+    handleThirdModalClose();
   };
 
   useEffect(() => {
@@ -442,6 +451,47 @@ const RightSideContent = ({
                             onPress={onClose}
                           >
                             Close
+                          </Button>
+                        </ModalFooter>
+                      </>
+                    )}
+                  </ModalContent>
+                </Modal>
+                <Modal 
+                  backdrop="opaque" 
+                  isOpen={isThirdModalOpen} 
+                  onClose={handleThirdModalClose}
+                  radius="lg"
+                  classNames={{
+                    body: "py-6",
+                    backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
+                    base: "border-[#292f46] bg-[#19172c] dark:bg-[#19172c] text-[#a8b0d3]",
+                    header: "border-b-[1px] border-[#292f46]",
+                    footer: "border-t-[1px] border-[#292f46]",
+                    closeButton: "hover:bg-white/5 active:bg-white/10",
+                  }}
+                >
+                  <ModalContent>
+                    {(onClose) => (
+                      <>
+                        <ModalHeader className="flex flex-col gap-1">Select a line</ModalHeader>
+                        <ModalBody>
+                        <Select
+                          label="Select"
+                          placeholder="Select a line"
+                          className="max-w-xs"
+                          style={{ backgroundColor: '#19172c', color: '#a8b0d3', border: '1px solid #292f46', borderRadius: '4px' }}
+                        >
+                          <SelectItem key={"uniquesomething"}>Linia 1</SelectItem>
+                          <SelectItem key={"uniquesomething2"}>Linia 2</SelectItem>
+                        </Select>
+                        </ModalBody>
+                        <ModalFooter>
+                          <Button color="success" variant="light" onPress={onClose}>
+                            Close
+                          </Button>
+                          <Button className="bg-[#6f4ef2] shadow-lg shadow-indigo-500/20" onClick={handleAddLineButton}>
+                            Add
                           </Button>
                         </ModalFooter>
                       </>
