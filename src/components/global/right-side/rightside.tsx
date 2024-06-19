@@ -13,6 +13,7 @@ import {
   ModalBody,
   ModalFooter,
   Button,
+  ButtonGroup,
   Table,
   TableHeader,
   TableColumn,
@@ -151,6 +152,54 @@ const RightSideContent = ({
       </TableCell>
     );
   };
+
+  const renderSingleButton = (order: any, entry: any): JSX.Element => {
+    return (
+      <Button
+        color="primary"
+        onClick={() => {
+          handleRowClick(
+            order.idorden + "_" + order.id,
+            entry.iddelivery,
+            entry.nrpallet
+          );
+        }}
+      >
+        Select delivery
+      </Button>
+    );
+  };
+
+  const renderDoubleButton = (order: any, entry: any): JSX.Element => {
+    return (
+      <ButtonGroup>
+        <Button
+          color="primary"
+          onClick={() => {
+            handleRowClick(
+              order.idorden + "_" + order.id,
+              entry.iddelivery,
+              entry.nrpallet
+            );
+          }}
+        >
+          Select delivery
+        </Button>
+        <Button
+          color="success"
+          onClick={() => {handleAddBoxesButton()}}
+        >
+          Add boxes
+        </Button>
+      </ButtonGroup>
+    );
+  };
+
+  const handleAddBoxesButton = () => {
+    let boxNumber = prompt("Insert box number: ");
+
+    console.log("Box number inserted: ", boxNumber);
+  }
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -373,18 +422,9 @@ const RightSideContent = ({
                                   <TableCell>{entry.bax_add}</TableCell>
                                   {renderStatusCell(entry)}
                                   <TableCell>
-                                    <Button
-                                      color="primary"
-                                      onClick={() => {
-                                        handleRowClick(
-                                          order.idorden + "_" + order.id,
-                                          entry.iddelivery,
-                                          entry.nrpallet
-                                        );
-                                      }}
-                                    >
-                                      Select delivery
-                                    </Button>
+                                    {
+                                      entry.state === 2 ? renderDoubleButton(order, entry) : renderSingleButton(order, entry)
+                                    }
                                   </TableCell>
                                 </TableRow>
                               ))}
