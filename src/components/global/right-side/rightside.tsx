@@ -31,7 +31,7 @@ import axios from "axios";
 const RightSideContent = ({
   selectedOrder,
   orderNumber,
-  orderDetailsLoaded
+  orderDetailsLoaded,
 }: {
   selectedOrder: any;
   orderNumber: any;
@@ -40,7 +40,6 @@ const RightSideContent = ({
   const [isMainModalOpen, setIsMainModalOpen] = useState(false);
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
   const [isThirdModalOpen, setIsThirdModalOpen] = useState(false);
-  
   const handleMainModalOpen = () => setIsMainModalOpen(true);
   const handleMainModalClose = () => setIsMainModalOpen(false);
 
@@ -55,9 +54,9 @@ const RightSideContent = ({
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [currentOrderInfo, setCurrentOrderInfo] = useState<any>({});
   const [nrPalletDelivery, setNrPalletDelivery] = useState("");
-  
+
   console.log("Order details loaded from rightside: ", orderDetailsLoaded);
-  
+
   const handlerClickDeliveryPallet = async (idorden_idpunnet: any) => {
     handleMainModalOpen();
     try {
@@ -73,7 +72,9 @@ const RightSideContent = ({
     iddelivery: number,
     nrpallet: string
   ) => {
-    if (confirm("Do you want to start this delivery pallet?")) {
+    if (
+      confirm(`Do you want to start this delivery pallet number ${nrpallet}?`)
+    ) {
       const res = await axios.get(
         `/api/updateDeliveryPalletState/${iddelivery}`
       );
@@ -152,21 +153,28 @@ const RightSideContent = ({
 
   const renderStatusCell = (data: any): JSX.Element => {
     let _text = data.state;
-    let _color: "primary" | "warning" | "success" | "default" | "secondary" | "danger" | undefined = "primary";
+    let _color:
+      | "primary"
+      | "warning"
+      | "success"
+      | "default"
+      | "secondary"
+      | "danger"
+      | undefined = "primary";
 
     switch (data.state) {
       case 1:
-        _text = "Waiting"
-        _color = "warning"
+        _text = "Waiting";
+        _color = "warning";
         break;
       case 2:
-        _text = "Processing"
-        _color = "success"
+        _text = "Processing";
+        _color = "success";
         break;
-    
+
       default:
-        _text = data.state
-        _color = "primary"
+        _text = data.state;
+        _color = "primary";
         break;
     }
 
@@ -176,7 +184,7 @@ const RightSideContent = ({
           {_text}
         </Chip>
       </TableCell>
-    )                        
+    );
   };
 
   const formatDate = (dateString: string) => {
@@ -397,10 +405,9 @@ const RightSideContent = ({
                           <Table>
                             <TableHeader>
                               <TableColumn> </TableColumn>
-                              <TableColumn>id</TableColumn>
                               <TableColumn>fecha</TableColumn>
-                              <TableColumn>idorden</TableColumn>
-                              <TableColumn>idpunnet</TableColumn>
+                              <TableColumn>Kg Availablle</TableColumn>
+                              <TableColumn>Bax Available</TableColumn>
                               <TableColumn>nropallet_recepcion</TableColumn>
                               <TableColumn>estado</TableColumn>
                             </TableHeader>
@@ -419,10 +426,9 @@ const RightSideContent = ({
                                       }
                                     ></Checkbox>
                                   </TableCell>
-                                  <TableCell>{data.id}</TableCell>
                                   <TableCell>{formatDate(data.fecha)}</TableCell>
-                                  <TableCell>{data.idorden}</TableCell>
-                                  <TableCell>{data.idpunnet}</TableCell>
+                                  <TableCell>{data.kg_disponible}</TableCell>
+                                  <TableCell>{data.box_disponible}</TableCell>
                                   <TableCell>
                                     {data.nropallet_recepcion}
                                   </TableCell>
