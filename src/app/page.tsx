@@ -9,6 +9,7 @@ const Home = () => {
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [data, setData] = useState<any[]>([]);
   const [ordersLoaded, setOrdersLoaded] = useState<any>(false);
+  const [orderDetailsLoaded, setOrderDetailsLoaded] = useState<any>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,6 +35,11 @@ const Home = () => {
     setSelectedOrder(order);
   };
 
+  const handleOrderDetailsLoadedCallback = (data: any) => {
+    setOrderDetailsLoaded(data);
+    console.log("Order details loaded from leftside: ", data);
+  };
+
   return (
     <div className="flex h-screen">
       <div className="w-[35%] bg-gray-100">
@@ -48,7 +54,7 @@ const Home = () => {
             />
           </div>
         ) : (
-          <CardClient clients={data} onOrderClick={handleOrderClick} />
+          <CardClient clients={data} onOrderClick={handleOrderClick} orderDetailsLoadedCallback={handleOrderDetailsLoadedCallback}/>
         )}
       </div>
       <div className="w-[65%] bg-white">
@@ -56,6 +62,7 @@ const Home = () => {
           <RightSideContent
             selectedOrder={selectedOrder}
             orderNumber={data.length}
+            orderDetailsLoaded={orderDetailsLoaded}
           />
         </div>
       </div>

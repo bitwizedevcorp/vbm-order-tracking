@@ -20,6 +20,8 @@ import {
   TableRow,
   TableCell,
   Checkbox,
+  Chip,
+  Progress,
   useDisclosure,
 } from "@nextui-org/react";
 import axios from "axios";
@@ -29,13 +31,15 @@ import { updateStateDeliveryPalett } from "@/lib/actions";
 const RightSideContent = ({
   selectedOrder,
   orderNumber,
+  orderDetailsLoaded
 }: {
   selectedOrder: any;
   orderNumber: any;
+  orderDetailsLoaded: any;
 }) => {
   const [isMainModalOpen, setIsMainModalOpen] = useState(false);
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
-
+  
   const handleMainModalOpen = () => setIsMainModalOpen(true);
   const handleMainModalClose = () => setIsMainModalOpen(false);
 
@@ -47,7 +51,7 @@ const RightSideContent = ({
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [currentOrderInfo, setCurrentOrderInfo] = useState<any>({});
   const [nrPalletDelivery, setNrPalletDelivery] = useState("");
-
+  console.log("Order details loaded from rightside: ", orderDetailsLoaded);
   const handlerClickDeliveryPallet = async (idorden_idpunnet: any) => {
     handleMainModalOpen();
     try {
@@ -143,6 +147,35 @@ const RightSideContent = ({
     }
   };
 
+  const renderStatusCell = (data: any): JSX.Element => {
+    let _text = data.state;
+    let _color: "primary" | "warning" | "success" | "default" | "secondary" | "danger" | undefined = "primary";
+
+    switch (data.state) {
+      case 1:
+        _text = "Waiting"
+        _color = "warning"
+        break;
+      case 2:
+        _text = "Processing"
+        _color = "success"
+        break;
+    
+      default:
+        _text = data.state
+        _color = "primary"
+        break;
+    }
+
+    return (
+      <TableCell>
+        <Chip className="capitalize" color={_color} size="sm" variant="flat">
+          {_text}
+        </Chip>
+      </TableCell>
+    )                        
+  };
+
   if ((!selectedOrder || selectedOrder.length === 0) && orderNumber > 0) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -155,6 +188,18 @@ const RightSideContent = ({
           </CardBody>
         </Card>
       </div>
+    );
+  }
+
+  if (selectedOrder && !orderDetailsLoaded) {
+    return (
+      <Progress
+        size="sm"
+        color="success"
+        isIndeterminate
+        aria-label="Loading..."
+        className="max-w-md"
+      />
     );
   }
 
@@ -268,7 +313,7 @@ const RightSideContent = ({
                                   <TableCell>{entry.nr_bax}</TableCell>
                                   <TableCell>{entry.kg}</TableCell>
                                   <TableCell>{entry.bax_add}</TableCell>
-                                  <TableCell>{entry.state}</TableCell>
+                                  {renderStatusCell(entry)}
                                   <TableCell>
                                     <Button
                                       color="primary"

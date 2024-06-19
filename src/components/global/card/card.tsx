@@ -13,16 +13,19 @@ import axios from "axios";
 const CardClient = ({
   clients,
   onOrderClick,
+  orderDetailsLoadedCallback,
 }: {
   clients: any[];
   onOrderClick: (order: any) => void;
+  orderDetailsLoadedCallback: (order: any) => void;
 }) => {
-  const [orderDetailsLoaded, setOrderDetailsLoaded] = useState<boolean>(false);
   
   const handleClick = async (id: number) => {
+    orderDetailsLoadedCallback(false);
     try {
       const res = await axios.get(`/api/getOrderDetail/${id}`);
       onOrderClick(res.data.orderDetail);
+      orderDetailsLoadedCallback(true);
     } catch (error) {
       console.log(error);
     }
