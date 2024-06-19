@@ -31,9 +31,12 @@ export async function GET(
     return NextResponse.json({ message: "Succes", status: 200 });
   } catch (error) {
     console.log(error);
-    return {
-      message: "Error fetching data",
-      error: error,
-    };
+    return NextResponse.json(
+      {
+        message: "Error fetching data",
+        error: error,
+      },
+      { status: 500 }
+    );
   }
 }

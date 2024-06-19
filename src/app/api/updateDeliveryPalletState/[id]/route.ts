@@ -3,26 +3,29 @@ import prisma from "../../../../../lib/prisma";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: number } }
+  { params }: { params: { id: string } }
 ) {
-  const id = params.id;
+  const id = Number(params.id);
   try {
     console.log("intru");
     const res = await prisma.tb_delivery_pallet.update({
       where: {
-        iddelivery: Number(id),
+        iddelivery: id,
       },
       data: {
         state: 2,
       },
     });
 
-    return NextResponse.json({ message: "Succes", response: res, status: 200 });
+    return NextResponse.json({ message: "Succes", status: 200 });
   } catch (error) {
     console.log(error);
-    return {
-      message: "Error fetching data",
-      error: error
-    }
+    return NextResponse.json(
+      {
+        message: "Error fetching data",
+        error: error,
+      },
+      { status: 500 }
+    );
   }
 }
