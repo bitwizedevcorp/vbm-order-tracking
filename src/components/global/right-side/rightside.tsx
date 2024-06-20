@@ -27,6 +27,7 @@ import {
   SelectItem,
   useDisclosure,
 } from "@nextui-org/react";
+import { ChangeEvent } from "react";
 import axios from "axios";
 
 const RightSideContent = ({
@@ -41,6 +42,10 @@ const RightSideContent = ({
   const [isMainModalOpen, setIsMainModalOpen] = useState(false);
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
   const [isThirdModalOpen, setIsThirdModalOpen] = useState(false);
+  const [isFourthModalOpen, setIsFourthModalOpen] = useState(false);
+  const [baxesValue, setBaxesValue] = useState<string>('');
+  const [baxesValueTotalComputation, setBaxesValueTotalComputation] = useState<{_total: Number, _text: String}>({_total: 0, _text: ''});
+
   const handleMainModalOpen = () => setIsMainModalOpen(true);
   const handleMainModalClose = () => setIsMainModalOpen(false);
 
@@ -49,6 +54,9 @@ const RightSideContent = ({
 
   const handleThirdModalOpen = () => setIsThirdModalOpen(true);
   const handleThirdModalClose = () => setIsThirdModalOpen(false);
+
+  const handleFourthModalOpen = () => setIsFourthModalOpen(true);
+  const handleFourthModalClose = () => setIsFourthModalOpen(false);
 
   const [deliveryData, setDeliveryData] = useState([]);
   const [secondaryModalData, setSecondaryModalData] = useState([]);
@@ -59,6 +67,7 @@ const RightSideContent = ({
   const [selectedLine, setSelectedLine] = useState("");
 
   console.log("Order details loaded from rightside: ", orderDetailsLoaded);
+  console.log("Selected order", selectedOrder);
 
   const handlerClickDeliveryPallet = async (idorden_idpunnet: any) => {
     handleMainModalOpen();
@@ -170,7 +179,7 @@ const RightSideContent = ({
     );
   };
 
-  const renderDoubleButton = async (order: any, entry: any) => {
+  const renderDoubleButton = (order: any, entry: any): JSX.Element => {
     return (
       <ButtonGroup>
         <Button
@@ -198,7 +207,7 @@ const RightSideContent = ({
   };
 
   const handleAddBoxesButton = () => {
-    let boxNumber = prompt("Insert bax number: ");
+    handleFourthModalOpen();
   };
 
   const formatDate = (dateString: string) => {
@@ -265,6 +274,27 @@ const RightSideContent = ({
     //close modal 3
     handleThirdModalClose();
   };
+
+  const handleAddTotalKgButton = async () => {
+
+  } 
+
+  useEffect(() => {
+    if (isFourthModalOpen) {
+    const kgFromDB = 30;
+    let total: Number = 0;
+    
+    total = kgFromDB * Number(baxesValue);
+    if (!baxesValue || baxesValue === '0') {
+      setBaxesValueTotalComputation({_total: total, _text: ""});
+    } else {
+      setBaxesValueTotalComputation({_total: total, _text: baxesValue + "*" + String(kgFromDB) + "kg = " + String(total) + "kg"});
+    }
+
+    //baxesValueTotalComputation._total should be added in DBs
+
+    }
+  });
 
   useEffect(() => {
     if (isMainModalOpen) {
@@ -522,14 +552,7 @@ const RightSideContent = ({
                   isOpen={isThirdModalOpen}
                   onClose={handleThirdModalClose}
                   radius="lg"
-                  classNames={{
-                    body: "py-6",
-                    backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-                    base: "border-[#292f46] bg-[#19172c] dark:bg-[#19172c] text-[#a8b0d3]",
-                    header: "border-b-[1px] border-[#292f46]",
-                    footer: "border-t-[1px] border-[#292f46]",
-                    closeButton: "hover:bg-white/5 active:bg-white/10",
-                  }}
+                  className="dark text-foreground bg-background"
                 >
                   <ModalContent>
                     {(onClose) => (
@@ -543,12 +566,6 @@ const RightSideContent = ({
                             label="Select"
                             placeholder="Select a line"
                             className="max-w-xs"
-                            style={{
-                              backgroundColor: "#19172c",
-                              color: "#a8b0d3",
-                              border: "1px solid #292f46",
-                              borderRadius: "4px",
-                            }}
                             onChange={handleSelectChange}
                           >
                             {linesAvailable.map((data: any) => (
@@ -569,6 +586,51 @@ const RightSideContent = ({
                           <Button
                             className="bg-[#6f4ef2] shadow-lg shadow-indigo-500/20"
                             onClick={handleAddLineButton}
+                          >
+                            Add
+                          </Button>
+                        </ModalFooter>
+                      </>
+                    )}
+                  </ModalContent>
+                </Modal>
+
+                <Modal
+                  backdrop="opaque"
+                  isOpen={isFourthModalOpen}
+                  onClose={handleFourthModalClose}
+                  radius="lg"
+                  className="dark text-foreground bg-background"
+                >
+                  <ModalContent>
+                    {(onClose) => (
+                      <>
+                        <ModalHeader className="flex flex-col gap-1">
+                          Baxes
+                        </ModalHeader>
+                        <ModalBody>
+                        <Input
+                          label="Enter baxes number"
+                          placeholder="E.g.: 12"
+                          type="number"
+                          value={baxesValue}
+                          onValueChange={setBaxesValue}
+                        />
+                        <p>
+                          {"Total: " + baxesValueTotalComputation._text}
+                        </p>
+                        </ModalBody>
+                        <ModalFooter>
+                          <Button
+                            color="success"
+                            variant="light"
+                            onPress={onClose}
+                          >
+                            Close
+                          </Button>
+                          <Button
+                            className="bg-[#6f4ef2] shadow-lg shadow-indigo-500/20"
+                            onClick={handleAddTotalKgButton}
                           >
                             Add
                           </Button>
