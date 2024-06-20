@@ -396,3 +396,15 @@ model tb_version {
   destino      String @db.VarChar(45)
   pass         String @db.VarChar(45)
 }
+
+model tb_product {
+  idproduct  Int     @id @default(autoincrement())
+  product    String  @db.VarChar(80)
+  tara       Decimal @default(0.000) @db.Decimal(6, 3)
+  weight     Decimal @default(0.000) @db.Decimal(6, 3)
+  punnet_bax Int     @default(0)
+  perpallet  Int     @default(0)
+  place      String  @default("0") @db.VarChar(10)
+  subplace   String  @default("0") @db.VarChar(10)
+  stock      Int     @default(0)
+}

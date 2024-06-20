@@ -56,7 +56,7 @@ const RightSideContent = ({
   const [currentOrderInfo, setCurrentOrderInfo] = useState<any>({});
   const [nrPalletDelivery, setNrPalletDelivery] = useState("");
   const [linesAvailable, setLinesAvailable] = useState<any[]>([]);
-  const [selectedLine, setSelectedLine] = useState('');
+  const [selectedLine, setSelectedLine] = useState("");
 
   console.log("Order details loaded from rightside: ", orderDetailsLoaded);
 
@@ -170,7 +170,7 @@ const RightSideContent = ({
     );
   };
 
-  const renderDoubleButton = (order: any, entry: any): JSX.Element => {
+  const renderDoubleButton = async (order: any, entry: any) => {
     return (
       <ButtonGroup>
         <Button
@@ -187,23 +187,23 @@ const RightSideContent = ({
         </Button>
         <Button
           color="success"
-          onClick={() => {handleAddBoxesButton()}}
+          onClick={() => {
+            handleAddBoxesButton();
+          }}
         >
-          Add boxes
+          Add baxes
         </Button>
       </ButtonGroup>
     );
   };
 
   const handleAddBoxesButton = () => {
-    let boxNumber = prompt("Insert box number: ");
-
-    console.log("Box number inserted: ", boxNumber);
-  }
+    let boxNumber = prompt("Insert bax number: ");
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB'); 
+    return date.toLocaleDateString("en-GB");
   };
 
   const handleSelectChange = (event: any) => {
@@ -213,7 +213,7 @@ const RightSideContent = ({
   const handleAddLineButton = async (data: any) => {
     //validate input
     let inputIsOk: boolean = true;
-    if (selectedLine === '') {
+    if (selectedLine === "") {
       inputIsOk = false;
     }
 
@@ -422,9 +422,9 @@ const RightSideContent = ({
                                   <TableCell>{entry.bax_add}</TableCell>
                                   {renderStatusCell(entry)}
                                   <TableCell>
-                                    {
-                                      entry.state === 2 ? renderDoubleButton(order, entry) : renderSingleButton(order, entry)
-                                    }
+                                    {entry.state === 2
+                                      ? renderDoubleButton(order, entry)
+                                      : renderSingleButton(order, entry)}
                                   </TableCell>
                                 </TableRow>
                               ))}
@@ -484,7 +484,9 @@ const RightSideContent = ({
                                       }
                                     ></Checkbox>
                                   </TableCell>
-                                  <TableCell>{formatDate(data.fecha)}</TableCell>
+                                  <TableCell>
+                                    {formatDate(data.fecha)}
+                                  </TableCell>
                                   <TableCell>{data.kg_disponible}</TableCell>
                                   <TableCell>{data.box_disponible}</TableCell>
                                   <TableCell>
@@ -515,9 +517,9 @@ const RightSideContent = ({
                     )}
                   </ModalContent>
                 </Modal>
-                <Modal 
-                  backdrop="opaque" 
-                  isOpen={isThirdModalOpen} 
+                <Modal
+                  backdrop="opaque"
+                  isOpen={isThirdModalOpen}
                   onClose={handleThirdModalClose}
                   radius="lg"
                   classNames={{
@@ -532,26 +534,42 @@ const RightSideContent = ({
                   <ModalContent>
                     {(onClose) => (
                       <>
-                        <ModalHeader className="flex flex-col gap-1">Select a line</ModalHeader>
+                        <ModalHeader className="flex flex-col gap-1">
+                          Select a line
+                        </ModalHeader>
                         <ModalBody>
-                        <Select
-                          items={linesAvailable}
-                          label="Select"
-                          placeholder="Select a line"
-                          className="max-w-xs"
-                          style={{ backgroundColor: '#19172c', color: '#a8b0d3', border: '1px solid #292f46', borderRadius: '4px' }}
-                          onChange={handleSelectChange}
-                        >
-                          {linesAvailable.map((data: any) => (
-                            <SelectItem key={data.id}>{data.linea}</SelectItem>
-                          ))}
-                        </Select>
+                          <Select
+                            items={linesAvailable}
+                            label="Select"
+                            placeholder="Select a line"
+                            className="max-w-xs"
+                            style={{
+                              backgroundColor: "#19172c",
+                              color: "#a8b0d3",
+                              border: "1px solid #292f46",
+                              borderRadius: "4px",
+                            }}
+                            onChange={handleSelectChange}
+                          >
+                            {linesAvailable.map((data: any) => (
+                              <SelectItem key={data.id}>
+                                {data.linea}
+                              </SelectItem>
+                            ))}
+                          </Select>
                         </ModalBody>
                         <ModalFooter>
-                          <Button color="success" variant="light" onPress={onClose}>
+                          <Button
+                            color="success"
+                            variant="light"
+                            onPress={onClose}
+                          >
                             Close
                           </Button>
-                          <Button className="bg-[#6f4ef2] shadow-lg shadow-indigo-500/20" onClick={handleAddLineButton}>
+                          <Button
+                            className="bg-[#6f4ef2] shadow-lg shadow-indigo-500/20"
+                            onClick={handleAddLineButton}
+                          >
                             Add
                           </Button>
                         </ModalFooter>
