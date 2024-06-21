@@ -52,6 +52,7 @@ const RightSideContent = ({
     useState<boolean>(false);
   const [dataWeightPunnet, setDataWeightPunnet] = useState<string>("");
   const [showSecondContent, setShowSecondContent] = useState(false);
+  const [lastInsertedId, setLastInsertedId] = useState([]);
 
   const handleMainModalOpen = () => setIsMainModalOpen(true);
   const handleMainModalClose = () => setIsMainModalOpen(false);
@@ -280,6 +281,7 @@ const RightSideContent = ({
         const res = await axios.post("/api/deliveryReception/", { payload });
         if (res.status === 200) {
           setSelectedRows([]);
+          setLastInsertedId(res.data);
           alert("Success: Data added successfully");
         } else {
           setSelectedRows([]);
@@ -315,6 +317,13 @@ const RightSideContent = ({
       } catch (error) {}
     } else {
       dataToInsert.state = 3;
+
+      const dataToInsertFull = {
+        dataToInsert: dataToInsert,
+        idDelivery: currentOrderInfo.iddelivery,
+        lastInsertedId: lastInsertedId
+      }
+
     }
 
     setShowSecondContent(false);

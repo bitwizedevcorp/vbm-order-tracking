@@ -6,6 +6,7 @@ export async function POST(req: Request) {
     const data = await req.json();
 
     const [idorden, idpunnet] = data.payload.idorden_idpunnet.split("_");
+    let lastInsertedId = [];
 
     for (const key of data.payload.selectedRows) {
       const insertDb = await prisma.tb_delivery_reception.create({
@@ -23,9 +24,10 @@ export async function POST(req: Request) {
           tiempo: new Date().toISOString(),
         },
       });
+      lastInsertedId.push(insertDb.id);
     }
 
-    return NextResponse.json({ message: "Success", status: 200 });
+    return NextResponse.json({ message: "Success", status: 200, data: lastInsertedId });
   } catch (err) {
     console.error("Error in POST endpoint:", err);
     return NextResponse.json({ message: "Error", status: 500 });
