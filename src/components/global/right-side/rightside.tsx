@@ -45,6 +45,9 @@ const RightSideContent = ({
   const [isFourthModalOpen, setIsFourthModalOpen] = useState(false);
   const [baxesValue, setBaxesValue] = useState<string>('');
   const [baxesValueTotalComputation, setBaxesValueTotalComputation] = useState<{_total: Number, _text: String}>({_total: 0, _text: ''});
+  const [querryDoneForPunnet, setQuerryDoneForPunent] = useState<boolean>(false);
+  const [dataWeightPunnet, setDataWeightPunnet] = useState<string>('');
+  const [showSecondContent, setShowSecondContent] = useState(false);
 
   const handleMainModalOpen = () => setIsMainModalOpen(true);
   const handleMainModalClose = () => setIsMainModalOpen(false);
@@ -197,7 +200,7 @@ const RightSideContent = ({
         <Button
           color="success"
           onClick={() => {
-            handleAddBoxesButton();
+            handleAddBoxesButton(order.punnet);
           }}
         >
           Add baxes
@@ -206,8 +209,20 @@ const RightSideContent = ({
     );
   };
 
-  const handleAddBoxesButton = () => {
+  const handleAddBoxesButton = async (punnet: any) => {
     handleFourthModalOpen();
+    if (!querryDoneForPunnet) {
+      try {
+        const res = await axios.get(`/api/getProductWeight/${punnet}`);
+        setQuerryDoneForPunent(true);
+        setDataWeightPunnet(res.data.orderDetail.weight);
+      } catch (error) {
+        setQuerryDoneForPunent(false);
+        console.log("Cannot fetch getProductWeight", error);
+      }
+      
+      setQuerryDoneForPunent(true);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -276,23 +291,55 @@ const RightSideContent = ({
   };
 
   const handleAddTotalKgButton = async () => {
+    setShowSecondContent(true);
+  }
 
-  } 
+  const handleGroupButtonClick = async (answer: any) => {
+    const dataToInsert = {
+      numberBaxes: baxesValue,
+      kgUsedBaxes: baxesValueTotalComputation._total,
+      nropallet_recepcion: selectedRows[0].nropallet_recepcion,
+      state: 0
+    }
+
+    if (answer === 'no') {
+      dataToInsert.state = 1;
+
+      try {
+        console.log("datatoinsert", dataToInsert);
+        const res = await axios.post(`/api/updateTbReceptionNo/`, dataToInsert);
+      } catch (error) {
+        
+      }
+    } else {
+      dataToInsert.state = 3;
+    }
+
+    setShowSecondContent(false);
+    setIsFourthModalOpen(false);
+  };
 
   useEffect(() => {
     if (isFourthModalOpen) {
-    const kgFromDB = 30;
-    let total: Number = 0;
-    
-    total = kgFromDB * Number(baxesValue);
-    if (!baxesValue || baxesValue === '0') {
-      setBaxesValueTotalComputation({_total: total, _text: ""});
-    } else {
-      setBaxesValueTotalComputation({_total: total, _text: baxesValue + "*" + String(kgFromDB) + "kg = " + String(total) + "kg"});
-    }
-
-    //baxesValueTotalComputation._total should be added in DBs
-
+      if (querryDoneForPunnet) {
+        if (dataWeightPunnet !== '') {
+          const kgFromDB = Number(dataWeightPunnet);
+          let total: Number = 0;
+          
+          total = kgFromDB * Number(baxesValue);
+          if (!baxesValue || baxesValue === '0') {
+            setBaxesValueTotalComputation({_total: total, _text: ""});
+          } else {
+            setBaxesValueTotalComputation({_total: total, _text: baxesValue + "*" + String(kgFromDB) + "kg = " + String(total) + "kg"});
+          }
+          
+          //baxesValueTotalComputation._total should be added in DBs
+        } else {
+          //got empty res from dbs
+        }
+      } else {
+        //loading
+      }
     }
   });
 
@@ -605,36 +652,69 @@ const RightSideContent = ({
                   <ModalContent>
                     {(onClose) => (
                       <>
-                        <ModalHeader className="flex flex-col gap-1">
-                          Baxes
-                        </ModalHeader>
-                        <ModalBody>
-                        <Input
-                          label="Enter baxes number"
-                          placeholder="E.g.: 12"
-                          type="number"
-                          value={baxesValue}
-                          onValueChange={setBaxesValue}
-                        />
-                        <p>
-                          {"Total: " + baxesValueTotalComputation._text}
-                        </p>
-                        </ModalBody>
-                        <ModalFooter>
-                          <Button
-                            color="success"
-                            variant="light"
-                            onPress={onClose}
-                          >
-                            Close
-                          </Button>
-                          <Button
-                            className="bg-[#6f4ef2] shadow-lg shadow-indigo-500/20"
-                            onClick={handleAddTotalKgButton}
-                          >
-                            Add
-                          </Button>
-                        </ModalFooter>
+                      {!showSecondContent ? (
+                        <>
+                          <ModalHeader className="flex flex-col gap-1">
+                            Baxes
+                          </ModalHeader>
+                          <ModalBody>
+                          <Input
+                            label="Enter baxes number"
+                            placeholder="E.g.: 12"
+                            type="number"
+                            value={baxesValue}
+                            onValueChange={setBaxesValue}
+                          />
+                          <p>
+                            {"Total: " + baxesValueTotalComputation._text}
+                          </p>
+                          </ModalBody>
+                          <ModalFooter>
+                            <Button
+                              color="success"
+                              variant="light"
+                              onPress={onClose}
+                            >
+                              Close
+                            </Button>
+                            <Button
+                              className="bg-[#6f4ef2] shadow-lg shadow-indigo-500/20"
+                              onClick={handleAddTotalKgButton}
+                            >
+                              Add
+                            </Button>
+                          </ModalFooter>
+                        </>
+                        ) : (
+                          <>
+                            <ModalHeader className="flex flex-col gap-1">
+                              Is pallet partially finished?
+                            </ModalHeader>
+                            <ModalBody className="flex justify-center">
+                              <Button
+                                className="m-2"
+                                onClick={() => handleGroupButtonClick('yes')}
+                              >
+                                Yes
+                              </Button>
+                              <Button
+                                className="m-2"
+                                onClick={() => handleGroupButtonClick('no')}
+                              >
+                                No
+                              </Button>
+                            </ModalBody>
+                            <ModalFooter>
+                              <Button
+                                color="success"
+                                variant="light"
+                                onPress={onClose}
+                              >
+                                Close
+                              </Button>
+                            </ModalFooter>
+                          </>
+                        )}
                       </>
                     )}
                   </ModalContent>

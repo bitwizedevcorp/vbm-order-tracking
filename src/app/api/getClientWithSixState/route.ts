@@ -14,7 +14,7 @@ export async function GET() {
         idorden: true,
       },
     });
-    console.log(data);
+    //console.log(data);
     return NextResponse.json(data); // Return the fetched data as JSON response
   } catch (error) {
     console.error("Error fetching data:", error);

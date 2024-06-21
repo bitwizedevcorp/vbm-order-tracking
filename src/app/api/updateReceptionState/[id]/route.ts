@@ -16,7 +16,7 @@ export async function GET(
       },
     });
 
-    console.log(extractCodigo);
+    //console.log(extractCodigo);
 
     const res = await prisma.tb_recepcion.update({
       where: {

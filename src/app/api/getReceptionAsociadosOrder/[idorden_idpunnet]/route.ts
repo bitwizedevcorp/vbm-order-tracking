@@ -52,7 +52,7 @@ export async function GET(
         0,
     }));
 
-    console.log(combinedData);
+    //console.log(combinedData);
 
     return NextResponse.json(combinedData);
   } catch (error) {

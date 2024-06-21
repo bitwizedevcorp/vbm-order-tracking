@@ -7,7 +7,7 @@ export async function GET(
 ) {
   const id = Number(params.id);
   try {
-    console.log("intru");
+    //console.log("intru");
     const res = await prisma.tb_delivery_pallet.update({
       where: {
         iddelivery: id,

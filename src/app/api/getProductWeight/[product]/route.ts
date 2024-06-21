@@ -11,7 +11,7 @@ export async function GET(
       { status: 405 }
     );
   }
-  console.log("intru");
+  //console.log("intru");
   const product = params.product;
 
   try {

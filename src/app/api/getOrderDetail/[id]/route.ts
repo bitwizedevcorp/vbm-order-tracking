@@ -9,7 +9,7 @@ export async function GET(req: Request, { params }: { params: { id: any } }) {
     );
   }
   const idorden = params.id;
-  console.log("aiaia", params.id);
+  //console.log("aiaia", params.id);
 
   try {
     const orderDetail = await prisma.tb_orden_detail.findMany({
