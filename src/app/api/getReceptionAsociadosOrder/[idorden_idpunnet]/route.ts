@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: { idorden_idpunnet: string } }
 ) {
   const [idorden, idpunnet] = params.idorden_idpunnet.split("_");
-
+  //fix aici
   try {
     // Fetch the associated orders
     const data = await prisma.tb_reception_asociados_order.findMany({

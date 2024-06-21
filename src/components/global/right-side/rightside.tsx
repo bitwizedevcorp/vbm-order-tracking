@@ -52,6 +52,7 @@ const RightSideContent = ({
     useState<boolean>(false);
   const [dataWeightPunnet, setDataWeightPunnet] = useState<string>("");
   const [showSecondContent, setShowSecondContent] = useState(false);
+  const [nrPallet, setNrPallet] = useState(false);
 
   const handleMainModalOpen = () => setIsMainModalOpen(true);
   const handleMainModalClose = () => setIsMainModalOpen(false);
@@ -63,7 +64,12 @@ const RightSideContent = ({
   const handleThirdModalClose = () => setIsThirdModalOpen(false);
 
   const handleFourthModalOpen = () => setIsFourthModalOpen(true);
-  const handleFourthModalClose = () => setIsFourthModalOpen(false);
+  const handleFourthModalClose = () => {
+    setIsFourthModalOpen(false);
+    setShowSecondContent(false);
+    setBaxesValue("");
+    setBaxesValueTotalComputation({ _total: 0, _text: "" });
+  };
 
   const [deliveryData, setDeliveryData] = useState([]);
   const [secondaryModalData, setSecondaryModalData] = useState([]);
@@ -72,9 +78,6 @@ const RightSideContent = ({
   const [nrPalletDelivery, setNrPalletDelivery] = useState("");
   const [linesAvailable, setLinesAvailable] = useState<any[]>([]);
   const [selectedLine, setSelectedLine] = useState("");
-
-  console.log("Order details loaded from rightside: ", orderDetailsLoaded);
-  console.log("Selected order", selectedOrder);
 
   const handlerClickDeliveryPallet = async (idorden_idpunnet: any) => {
     handleMainModalOpen();
@@ -153,6 +156,12 @@ const RightSideContent = ({
         _text = "Processing";
         _color = "success";
         break;
+      case 3:
+        _text = "Partially finished";
+        _color = "success";
+      case 4:
+        _text = "Finished";
+        _color = "success";
 
       default:
         _text = data.state;
@@ -204,6 +213,7 @@ const RightSideContent = ({
         <Button
           color="success"
           onClick={() => {
+            setNrPallet(entry.nrPallet);
             handleAddBoxesButton(order.punnet);
           }}
         >
@@ -305,16 +315,28 @@ const RightSideContent = ({
       nropallet_recepcion: selectedRows[0].nropallet_recepcion,
       state: 0,
     };
-
     if (answer === "no") {
+      console.log("aici");
       dataToInsert.state = 1;
 
       try {
-        console.log("datatoinsert", dataToInsert);
         const res = await axios.post(`/api/updateTbReceptionNo/`, dataToInsert);
       } catch (error) {}
     } else {
-      dataToInsert.state = 3;
+      if (answer === "yes") {
+        const dataToInsertFull = {
+          ...dataToInsert,
+          idDelivery: currentOrderInfo.iddelivery,
+        };
+        try {
+          const res = await axios.post(
+            `/api/updateTbReceptionYes/`,
+            dataToInsertFull
+          );
+        } catch (error) {
+          console.log(error);
+        }
+      }
     }
 
     setShowSecondContent(false);

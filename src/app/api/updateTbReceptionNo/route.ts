@@ -3,6 +3,7 @@ import prisma from "../../../../lib/prisma";
 
 export async function POST(req: Request) {
   const dataToInsert = await req.json();
+  console.log("data:", dataToInsert);
   try {
     const dataAvailable = await prisma.tb_recepcion.findFirst({
       where: {
