@@ -3,6 +3,7 @@ import prisma from "../../../../lib/prisma";
 
 export async function POST(req: Request) {
   const dataToInsert = await req.json();
+  console.log(dataToInsert);
   try {
     const dataAvailable = await prisma.tb_recepcion.findFirst({
       where: {
@@ -15,8 +16,9 @@ export async function POST(req: Request) {
       },
     });
 
+    console.log(dataAvailable);
+
     if (dataAvailable) {
-      // Convert Prisma Decimal to JavaScript number
       const boxDisponibleFromDb = dataAvailable.box_disponible;
       const kgDisponible = dataAvailable.kg_disponible.toNumber();
 
