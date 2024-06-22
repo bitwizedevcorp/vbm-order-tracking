@@ -68,7 +68,7 @@ const RightSideContent = ({
   const handleFourthModalClose = () => setIsFourthModalOpen(false);
 
   const [deliveryData, setDeliveryData] = useState([]);
-  const [secondaryModalData, setSecondaryModalData] = useState([]);
+  const [secondaryModalData, setSecondaryModalData] = useState<any[]>([]);
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [currentOrderInfo, setCurrentOrderInfo] = useState<any>({});
   const [nrPalletDelivery, setNrPalletDelivery] = useState("");
@@ -238,18 +238,18 @@ const RightSideContent = ({
   const handleAddBoxesButton = async (punnet: any, nrPalletClicked: any) => {
     handleFourthModalOpen();
     console.log("pun", punnet, nrPalletClicked);
-    // if (!querryDoneForPunnet) {
-    //   try {
-    //     const res = await axios.get(`/api/getProductWeight/${punnet}`);
-    //     setQuerryDoneForPunent(true);
-    //     setDataWeightPunnet(res.data.orderDetail.weight);
-    //   } catch (error) {
-    //     setQuerryDoneForPunent(false);
-    //     console.log("Cannot fetch getProductWeight", error);
-    //   }
+    if (!querryDoneForPunnet) {
+      try {
+        const res = await axios.get(`/api/getProductWeight/${punnet}`);
+        setQuerryDoneForPunent(true);
+        setDataWeightPunnet(res.data.orderDetail.weight);
+      } catch (error) {
+        setQuerryDoneForPunent(false);
+        console.log("Cannot fetch getProductWeight", error);
+      }
 
-    //   setQuerryDoneForPunent(true);
-    // }
+      setQuerryDoneForPunent(true);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -264,6 +264,10 @@ const RightSideContent = ({
   const handleAddLineButton = async (data: any) => {
     //validate input
     let inputIsOk: boolean = true;
+    let _selectedRows = [nrPalletsDeliveryInProgress[nrPalletDelivery].currentKey];
+
+    const _nropallet_recepcion = secondaryModalData.find(data => data.id === Number(_selectedRows[0]));
+
     if (selectedLine === "") {
       inputIsOk = false;
     }
@@ -273,9 +277,10 @@ const RightSideContent = ({
       let workLine = "";
       const payload = {
         idorden_idpunnet,
-        selectedRows,
+        selectedRows: _selectedRows,
         workLine,
         nrPalletDelivery,
+        nropallet_recepcion: _nropallet_recepcion.nropallet_recepcion
       };
 
       console.log("Payload before prompt:", payload);
@@ -285,7 +290,8 @@ const RightSideContent = ({
       console.log(payload);
 
       for (const row of payload.selectedRows) {
-        let id = row.nropallet_recepcion;
+        //let id = row.nropallet_recepcion; // Chair trb aici nropallet reception sau id? Daca trb nropallet recepotion, asta e in _nropallet_recepcion.nropallet_recepcion
+        let id = row;
         try {
           const res = await axios.get(`/api/updateReceptionState/${id}`);
           console.log(
@@ -305,6 +311,19 @@ const RightSideContent = ({
         const res = await axios.post("/api/deliveryReception/", { payload });
         if (res.status === 200) {
           alert("Success: Data added successfully");
+
+          let foundKey: string = "";
+          for (const key in nrPalletsDeliveryInProgress) {
+            if (nrPalletsDeliveryInProgress[key].anchorKey === _selectedRows[0]) {
+              foundKey = key;
+              break; 
+            }
+          }
+
+          if (foundKey != "") {
+            nrPalletsDeliveryInProgress[foundKey]["lastInsertedId"] = res.data.data;
+          }
+          console.log("ROWCL", nrPalletsDeliveryInProgress);
         } else {
           alert("Error: Incorrect number of lines or something went wrong");
         }
@@ -327,6 +346,7 @@ const RightSideContent = ({
       kgUsedBaxes: baxesValueTotalComputation._total,
       nropallet_recepcion: selectedRows[0].nropallet_recepcion,
       state: 0,
+      
     };
 
     if (answer === "no") {

@@ -5,6 +5,7 @@ export async function GET(
   req: Request,
   { params }: { params: { id: number } }
 ) {
+  console.log("paramss", params);
   const id = Number(params.id);
   try {
     const extractCodigo = await prisma.tb_recepcion.findMany({
