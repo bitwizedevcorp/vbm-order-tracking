@@ -25,6 +25,7 @@ import {
   Progress,
   Select,
   SelectItem,
+  Radio, RadioGroup,
   useDisclosure,
 } from "@nextui-org/react";
 import { ChangeEvent } from "react";
@@ -66,8 +67,15 @@ const RightSideContent = ({
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [currentOrderInfo, setCurrentOrderInfo] = useState<any>({});
   const [nrPalletDelivery, setNrPalletDelivery] = useState("");
+  const [nrPalletsDeliveryInProgress, setNrPalletsDeliveryInProgress] = useState<any>({});
   const [linesAvailable, setLinesAvailable] = useState<any[]>([]);
   const [selectedLine, setSelectedLine] = useState("");
+  const [selectedKeys, setSelectedKeys] = useState<any>();
+
+  const handleSelectionChange = (e: any) => {
+    nrPalletsDeliveryInProgress[nrPalletDelivery] = e; // 1st way working for all in progress
+    setSelectedKeys(e); // 2nd way working for just 1
+  }
 
   console.log("Order details loaded from rightside: ", orderDetailsLoaded);
   console.log("Selected order", selectedOrder);
@@ -102,6 +110,7 @@ const RightSideContent = ({
           setSecondaryModalData(res.data);
           setCurrentOrderInfo({ idorden_idpunnet, iddelivery });
           setNrPalletDelivery(nrpallet); //
+          // nrPalletsDeliveryInProgress[nrPalletDelivery] = "" // E ok aici asta daca aici se pune status in progress. TODO: Pop nr pallet when finalized
         } catch (error) {
           console.error("Error fetching row", error);
         }
@@ -110,23 +119,35 @@ const RightSideContent = ({
     }
   };
 
-  const handleCheckboxChange = (data: any, checked: boolean) => {
-    if (checked) {
-      setSelectedRows([...selectedRows, data]);
-    } else {
-      setSelectedRows(selectedRows.filter((row) => row.id !== data.id));
-    }
+  // TODO: Delete it+depds. Not needed anymore
+  const handleCheckboxChange = (data: any) => {
+    // console.log("rowclick", data);
+    
+    // if (checked) {
+    //   setSelectedRows([...selectedRows, data]);
+    // } else {
+    //   setSelectedRows(selectedRows.filter((row) => row.id !== data.id));
+    // }
   };
 
   const handleSecondaryModalButtonClick = async () => {
-    try {
-      const res = await axios.get("/api/getLines");
-      console.log(res.data);
-      setLinesAvailable(res.data);
-    } catch (error) {
-      console.log("Error at fetching lines from dbs", error);
+    if (selectedKeys.size === 0) {
+      // No keys selected
+      alert("Nothing selected")
+    } else {
+      // Find the pallet you clicked currently on 
+      nrPalletsDeliveryInProgress[nrPalletDelivery] = selectedKeys;
+      console.log("rowclick", nrPalletsDeliveryInProgress);
+
+      // try {
+      //   const res = await axios.get("/api/getLines");
+      //   console.log(res.data);
+      //   setLinesAvailable(res.data);
+      // } catch (error) {
+      //   console.log("Error at fetching lines from dbs", error);
+      // }
+      // handleThirdModalOpen();
     }
-    handleThirdModalOpen();
   };
 
   const renderStatusCell = (data: any): JSX.Element => {
@@ -537,9 +558,13 @@ const RightSideContent = ({
                           Secondary Modal
                         </ModalHeader>
                         <ModalBody>
-                          <Table>
+                          <Table
+                            color={"success"}
+                            selectionMode="single" 
+                            selectedKeys={nrPalletsDeliveryInProgress[nrPalletDelivery]}
+                            onSelectionChange={(e) => handleSelectionChange(e)}
+                          >
                             <TableHeader>
-                              <TableColumn> </TableColumn>
                               <TableColumn>fecha</TableColumn>
                               <TableColumn>Kg Availablle</TableColumn>
                               <TableColumn>Bax Available</TableColumn>
@@ -549,18 +574,6 @@ const RightSideContent = ({
                             <TableBody>
                               {secondaryModalData.map((data: any) => (
                                 <TableRow key={data.id}>
-                                  <TableCell>
-                                    <Checkbox
-                                      size="lg"
-                                      value={data.id}
-                                      onChange={(e) =>
-                                        handleCheckboxChange(
-                                          data,
-                                          e.target.checked
-                                        )
-                                      }
-                                    ></Checkbox>
-                                  </TableCell>
                                   <TableCell>
                                     {formatDate(data.fecha)}
                                   </TableCell>
