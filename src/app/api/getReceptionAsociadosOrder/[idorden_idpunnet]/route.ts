@@ -30,14 +30,23 @@ export async function GET(
         nropallet: true, // Include nropallet to match with the associated orders
         box_disponible: true,
         kg_disponible: true,
+        state: true,
       },
     });
 
     // Create a map for quick lookup of reception info by pallet number
     const receptionInfoMap: {
-      [key: string]: { box_disponible: number; kg_disponible: number };
+      [key: string]: {
+        box_disponible: number;
+        kg_disponible: number;
+        state: number;
+      };
     } = infoFromReception.reduce((acc: { [key: string]: any }, info) => {
-      acc[info.nropallet.toString()] = info;
+      acc[info.nropallet.toString()] = {
+        box_disponible: Number(info.box_disponible), // Convert Decimal to number
+        kg_disponible: Number(info.kg_disponible), // Convert Decimal to number
+        state: info.state,
+      };
       return acc;
     }, {});
 
@@ -50,11 +59,18 @@ export async function GET(
       kg_disponible:
         receptionInfoMap[order.nropallet_recepcion.toString()]?.kg_disponible ||
         0,
+      state:
+        receptionInfoMap[order.nropallet_recepcion.toString()]?.state || null,
     }));
 
-    //console.log(combinedData);
+    const dataToSend = [];
+    for (const n of combinedData) {
+      if (n.state === 1) {
+        dataToSend.push(n);
+      }
+    }
 
-    return NextResponse.json(combinedData);
+    return NextResponse.json(dataToSend);
   } catch (error) {
     console.error("Error fetching data:", error);
     return NextResponse.json(

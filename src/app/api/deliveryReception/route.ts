@@ -7,6 +7,8 @@ export async function POST(req: Request) {
 
     const [idorden, idpunnet] = data.payload.idorden_idpunnet.split("_");
 
+    console.log(data);
+
     for (const key of data.payload.selectedRows) {
       const insertDb = await prisma.tb_delivery_reception.create({
         data: {
