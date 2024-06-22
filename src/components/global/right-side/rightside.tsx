@@ -139,14 +139,14 @@ const RightSideContent = ({
       nrPalletsDeliveryInProgress[nrPalletDelivery] = selectedKeys;
       console.log("rowclick", nrPalletsDeliveryInProgress);
 
-      // try {
-      //   const res = await axios.get("/api/getLines");
-      //   console.log(res.data);
-      //   setLinesAvailable(res.data);
-      // } catch (error) {
-      //   console.log("Error at fetching lines from dbs", error);
-      // }
-      // handleThirdModalOpen();
+      try {
+        const res = await axios.get("/api/getLines");
+        console.log(res.data);
+        setLinesAvailable(res.data);
+      } catch (error) {
+        console.log("Error at fetching lines from dbs", error);
+      }
+      handleThirdModalOpen();
     }
   };
 
@@ -221,7 +221,7 @@ const RightSideContent = ({
         <Button
           color="success"
           onClick={() => {
-            handleAddBoxesButton(order.punnet);
+            handleAddBoxesButton(order.punnet, entry.nrpallet);
           }}
         >
           Add baxes
@@ -230,20 +230,21 @@ const RightSideContent = ({
     );
   };
 
-  const handleAddBoxesButton = async (punnet: any) => {
+  const handleAddBoxesButton = async (punnet: any, nrPalletClicked: any) => {
     handleFourthModalOpen();
-    if (!querryDoneForPunnet) {
-      try {
-        const res = await axios.get(`/api/getProductWeight/${punnet}`);
-        setQuerryDoneForPunent(true);
-        setDataWeightPunnet(res.data.orderDetail.weight);
-      } catch (error) {
-        setQuerryDoneForPunent(false);
-        console.log("Cannot fetch getProductWeight", error);
-      }
+    console.log("pun", punnet, nrPalletClicked);
+    // if (!querryDoneForPunnet) {
+    //   try {
+    //     const res = await axios.get(`/api/getProductWeight/${punnet}`);
+    //     setQuerryDoneForPunent(true);
+    //     setDataWeightPunnet(res.data.orderDetail.weight);
+    //   } catch (error) {
+    //     setQuerryDoneForPunent(false);
+    //     console.log("Cannot fetch getProductWeight", error);
+    //   }
       
-      setQuerryDoneForPunent(true);
-    }
+    //   setQuerryDoneForPunent(true);
+    // }
   };
 
   const formatDate = (dateString: string) => {
