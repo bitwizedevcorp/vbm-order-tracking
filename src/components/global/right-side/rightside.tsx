@@ -25,6 +25,7 @@ import {
   Progress,
   Select,
   SelectItem,
+  Spinner,
   Radio,
   RadioGroup,
   useDisclosure,
@@ -77,6 +78,9 @@ const RightSideContent = ({
   const [linesAvailable, setLinesAvailable] = useState<any[]>([]);
   const [selectedLine, setSelectedLine] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<any>();
+  const [boxesButtonClickId, setBoxesButtonClickId] = useState<any>();
+  const [secondaryModelDataLoaded, setSecondaryModelDataLoaded] = useState<any>();
+  const [addLineButtonTriggered, setAddLineButtonTriggered] = useState<any>(false);
 
   const handleSelectionChange = (e: any) => {
     nrPalletsDeliveryInProgress[nrPalletDelivery] = e; // 1st way working for all in progress
@@ -104,15 +108,17 @@ const RightSideContent = ({
     if (
       confirm(`Do you want to start this delivery pallet number ${nrpallet}?`)
     ) {
+      setSecondaryModelDataLoaded(false);
+      handleSecondModalOpen();
       const res = await axios.get(
         `/api/updateDeliveryPalletState/${iddelivery}`
       );
-
       if (res.status === 200) {
         try {
           const res = await axios.get(
             `/api/getReceptionAsociadosOrder/${idorden_idpunnet}`
           );
+          setSecondaryModelDataLoaded(true);
           setSecondaryModalData(res.data);
           setCurrentOrderInfo({ idorden_idpunnet, iddelivery });
           setNrPalletDelivery(nrpallet); //
@@ -120,7 +126,6 @@ const RightSideContent = ({
         } catch (error) {
           console.error("Error fetching row", error);
         }
-        handleSecondModalOpen();
       }
     }
   };
@@ -136,22 +141,28 @@ const RightSideContent = ({
   };
 
   const handleSecondaryModalButtonClick = async () => {
-    if (selectedKeys.size === 0) {
+    console.log("select", selectedKeys);
+    if (!selectedKeys) {
       // No keys selected
       alert("Nothing selected");
     } else {
-      // Find the pallet you clicked currently on
-      nrPalletsDeliveryInProgress[nrPalletDelivery] = selectedKeys;
-      console.log("rowclick", nrPalletsDeliveryInProgress);
-
-      try {
-        const res = await axios.get("/api/getLines");
-        console.log(res.data);
-        setLinesAvailable(res.data);
-      } catch (error) {
-        console.log("Error at fetching lines from dbs", error);
+      if (selectedKeys.size === 0) {
+        // No keys selected
+        alert("Nothing selected");
+      } else {
+        // Find the pallet you clicked currently on
+        nrPalletsDeliveryInProgress[nrPalletDelivery] = selectedKeys;
+        console.log("rowclick", nrPalletsDeliveryInProgress);
+  
+        try {
+          const res = await axios.get("/api/getLines");
+          console.log(res.data);
+          setLinesAvailable(res.data);
+        } catch (error) {
+          console.log("Error at fetching lines from dbs", error);
+        }
+        handleThirdModalOpen();
       }
-      handleThirdModalOpen();
     }
   };
 
@@ -236,6 +247,7 @@ const RightSideContent = ({
   };
 
   const handleAddBoxesButton = async (punnet: any, nrPalletClicked: any) => {
+    setBoxesButtonClickId(nrPalletClicked);
     handleFourthModalOpen();
     console.log("pun", punnet, nrPalletClicked);
     if (!querryDoneForPunnet) {
@@ -263,6 +275,7 @@ const RightSideContent = ({
 
   const handleAddLineButton = async (data: any) => {
     //validate input
+    setAddLineButtonTriggered(true);
     let inputIsOk: boolean = true;
     let _selectedRows = [nrPalletsDeliveryInProgress[nrPalletDelivery].currentKey];
 
@@ -324,6 +337,8 @@ const RightSideContent = ({
             nrPalletsDeliveryInProgress[foundKey]["lastInsertedId"] = res.data.data;
           }
           console.log("ROWCL", nrPalletsDeliveryInProgress);
+          handleThirdModalClose();
+          handleSecondModalClose();
         } else {
           alert("Error: Incorrect number of lines or something went wrong");
         }
@@ -331,7 +346,8 @@ const RightSideContent = ({
         console.error("Error:", error);
       }
     }
-
+    
+    setAddLineButtonTriggered(false);
     //close modal 3
     handleThirdModalClose();
   };
@@ -344,9 +360,9 @@ const RightSideContent = ({
     const dataToInsert = {
       numberBaxes: baxesValue,
       kgUsedBaxes: baxesValueTotalComputation._total,
-      nropallet_recepcion: selectedRows[0].nropallet_recepcion,
+      nropallet_recepcion: nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey,
       state: 0,
-      
+      insertedId: nrPalletsDeliveryInProgress[boxesButtonClickId]["lastInsertedId"],
     };
 
     if (answer === "no") {
@@ -591,43 +607,51 @@ const RightSideContent = ({
                           Secondary Modal
                         </ModalHeader>
                         <ModalBody>
-                          <Table
-                            color={"success"}
-                            selectionMode="single"
-                            selectedKeys={
-                              nrPalletsDeliveryInProgress[nrPalletDelivery]
-                            }
-                            onSelectionChange={(e) => handleSelectionChange(e)}
-                          >
-                            <TableHeader>
-                              <TableColumn>fecha</TableColumn>
-                              <TableColumn>Kg Availablle</TableColumn>
-                              <TableColumn>Bax Available</TableColumn>
-                              <TableColumn>nropallet_recepcion</TableColumn>
-                              <TableColumn>estado</TableColumn>
-                            </TableHeader>
-                            <TableBody>
-                              {secondaryModalData.map((data: any) => (
-                                <TableRow key={data.id}>
-                                  <TableCell>
-                                    {formatDate(data.fecha)}
-                                  </TableCell>
-                                  <TableCell>{data.kg_disponible}</TableCell>
-                                  <TableCell>{data.box_disponible}</TableCell>
-                                  <TableCell>
-                                    {data.nropallet_recepcion}
-                                  </TableCell>
-                                  <TableCell>{data.estado}</TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                          <Button
-                            onClick={handleSecondaryModalButtonClick}
-                            color="success"
-                          >
-                            Use selected boxes
-                          </Button>
+                          {secondaryModelDataLoaded ? (
+                            <>
+                              <Table
+                                color={"success"}
+                                selectionMode="single"
+                                selectedKeys={
+                                  nrPalletsDeliveryInProgress[nrPalletDelivery]
+                                }
+                                onSelectionChange={(e) => handleSelectionChange(e)}
+                              >
+                                <TableHeader>
+                                  <TableColumn>fecha</TableColumn>
+                                  <TableColumn>Kg Availablle</TableColumn>
+                                  <TableColumn>Bax Available</TableColumn>
+                                  <TableColumn>nropallet_recepcion</TableColumn>
+                                  <TableColumn>estado</TableColumn>
+                                </TableHeader>
+                                <TableBody>
+                                  {secondaryModalData.map((data: any) => (
+                                    <TableRow key={data.id}>
+                                      <TableCell>
+                                        {formatDate(data.fecha)}
+                                      </TableCell>
+                                      <TableCell>{data.kg_disponible}</TableCell>
+                                      <TableCell>{data.box_disponible}</TableCell>
+                                      <TableCell>
+                                        {data.nropallet_recepcion}
+                                      </TableCell>
+                                      <TableCell>{data.estado}</TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                              <Button
+                                onClick={handleSecondaryModalButtonClick}
+                                color="success"
+                              >
+                                Use selected boxes
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Spinner label="Loading..." color="warning" className="flex justify-center"/>
+                            </>
+                          )}
                         </ModalBody>
                         <ModalFooter>
                           <Button
@@ -655,36 +679,64 @@ const RightSideContent = ({
                         <ModalHeader className="flex flex-col gap-1">
                           Select a line
                         </ModalHeader>
-                        <ModalBody>
-                          <Select
-                            items={linesAvailable}
-                            label="Select"
-                            placeholder="Select a line"
-                            className="max-w-xs"
-                            onChange={handleSelectChange}
-                          >
-                            {linesAvailable.map((data: any) => (
-                              <SelectItem key={data.id}>
-                                {data.linea}
-                              </SelectItem>
-                            ))}
-                          </Select>
-                        </ModalBody>
-                        <ModalFooter>
-                          <Button
-                            color="success"
-                            variant="light"
-                            onPress={onClose}
-                          >
-                            Close
-                          </Button>
-                          <Button
-                            className="bg-[#6f4ef2] shadow-lg shadow-indigo-500/20"
-                            onClick={handleAddLineButton}
-                          >
-                            Add
-                          </Button>
-                        </ModalFooter>
+                        {addLineButtonTriggered ? (
+                          <>
+                            <ModalBody>
+                              <Spinner label="Adding in dbs..." color="success" className="flex justify-center"/>
+                            </ModalBody>
+                            <ModalFooter>
+                              <Button
+                                color="success"
+                                variant="light"
+                                onPress={onClose}
+                                isDisabled
+                              >
+                                Close
+                              </Button>
+                              <Button
+                                className="bg-[#6f4ef2] shadow-lg shadow-indigo-500/20"
+                                onClick={handleAddLineButton}
+                                isDisabled
+                              >
+                                Add
+                              </Button>
+                            </ModalFooter>
+                          </>
+                        ) : (
+                          <>
+                            <ModalBody>
+                              <Select
+                                items={linesAvailable}
+                                label="Select"
+                                placeholder="Select a line"
+                                className="max-w-xs"
+                                onChange={handleSelectChange}
+                              >
+                                {linesAvailable.map((data: any) => (
+                                  <SelectItem key={data.id}>
+                                    {data.linea}
+                                  </SelectItem>
+                                ))}
+                              </Select>
+                            </ModalBody>
+                            <ModalFooter>
+                              <Button
+                                color="success"
+                                variant="light"
+                                onPress={onClose}
+                              >
+                                Close
+                              </Button>
+                              <Button
+                                className="bg-[#6f4ef2] shadow-lg shadow-indigo-500/20"
+                                onClick={handleAddLineButton}
+                              >
+                                Add
+                              </Button>
+                            </ModalFooter>
+                          </>
+                        )}
+                        
                       </>
                     )}
                   </ModalContent>
