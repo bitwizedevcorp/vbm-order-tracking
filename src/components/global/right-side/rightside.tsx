@@ -79,8 +79,10 @@ const RightSideContent = ({
   const [selectedLine, setSelectedLine] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<any>();
   const [boxesButtonClickId, setBoxesButtonClickId] = useState<any>();
-  const [secondaryModelDataLoaded, setSecondaryModelDataLoaded] = useState<any>();
-  const [addLineButtonTriggered, setAddLineButtonTriggered] = useState<any>(false);
+  const [secondaryModelDataLoaded, setSecondaryModelDataLoaded] =
+    useState<any>();
+  const [addLineButtonTriggered, setAddLineButtonTriggered] =
+    useState<any>(false);
   const [idDeliveryClicked, setIdDeliveryClicked] = useState<any>();
 
   const handleSelectionChange = (e: any) => {
@@ -187,6 +189,14 @@ const RightSideContent = ({
         _text = "Processing";
         _color = "success";
         break;
+      case 3:
+        _text = "Partial finished";
+        _color = "warning";
+        break;
+      case 4:
+        _text = "Finished";
+        _color = "success";
+        break;
 
       default:
         _text = data.state;
@@ -238,7 +248,11 @@ const RightSideContent = ({
         <Button
           color="success"
           onClick={() => {
-            handleAddBoxesButton(order.punnet, entry.nrpallet, entry.iddelivery);
+            handleAddBoxesButton(
+              order.punnet,
+              entry.nrpallet,
+              entry.iddelivery
+            );
           }}
         >
           Add baxes
@@ -247,7 +261,11 @@ const RightSideContent = ({
     );
   };
 
-  const handleAddBoxesButton = async (punnet: any, nrPalletClicked: any, iddelivery: any) => {
+  const handleAddBoxesButton = async (
+    punnet: any,
+    nrPalletClicked: any,
+    iddelivery: any
+  ) => {
     setBoxesButtonClickId(nrPalletClicked);
     setIdDeliveryClicked(iddelivery);
     handleFourthModalOpen();
@@ -395,11 +413,14 @@ const RightSideContent = ({
       kgUsedBaxes: baxesValueTotalComputation._total,
       nropallet_recepcion: _nropallet_recepcion,
       state: 0,
-      insertedId: nrPalletsDeliveryInProgress[boxesButtonClickId]["lastInsertedId"],
+      insertedId:
+        nrPalletsDeliveryInProgress[boxesButtonClickId]["lastInsertedId"],
       idDeliveryClicked: idDeliveryClicked,
-      idOrder: selectedOrder.idorden,
-      idOrdenDetails: selectedOrder.id,
+      idOrder: selectedOrder[0].idorden,
+      idOrdenDetails: selectedOrder[0].id,
     };
+
+    console.log("datatoinsert:", dataToInsert);
 
     if (answer === "no") {
       dataToInsert.state = 1;

@@ -3,7 +3,6 @@ import prisma from "../../../../lib/prisma";
 
 export async function POST(req: Request) {
   const dataToInsert = await req.json();
-  console.log("here:", dataToInsert);
   try {
     const dataAvailable = await prisma.tb_recepcion.findFirst({
       where: {
@@ -15,8 +14,6 @@ export async function POST(req: Request) {
         codigo: true,
       },
     });
-
-    console.log("data available", dataAvailable);
 
     if (dataAvailable) {
       const boxDisponibleFromDb = dataAvailable.box_disponible;
@@ -41,15 +38,24 @@ export async function POST(req: Request) {
         }
       }
     }
+    const numberOfPallet = await prisma.tb_delivery_pallet.findUnique({
+      where: {
+        iddelivery: dataToInsert.idDeliveryClicked,
+      },
+      select: {
+        nrpallet: true,
+      },
+    });
     //so for the delivery pallet db is ok
     const insertKgAndBaxexDeliveryPallet =
       await prisma.tb_delivery_pallet.update({
         where: {
-          iddelivery: 582,
+          iddelivery: dataToInsert.idDeliveryClicked,
         },
         data: {
           bax_add: Number(dataToInsert.numberBaxes),
           kg_add: dataToInsert.kgUsedBaxes,
+          state: 3,
         },
       });
 
@@ -57,16 +63,15 @@ export async function POST(req: Request) {
     const getIdForDeliveryReception =
       await prisma.tb_delivery_reception.findFirst({
         where: {
-          idorden: 30,
-          idpunnet: 46,
-          nropallet_delivery: 2,
-          nropallet_recepcion: 113,
+          idorden: dataToInsert.idOrder,
+          idpunnet: dataToInsert.idOrdenDetails,
+          nropallet_delivery: numberOfPallet?.nrpallet,
+          nropallet_recepcion: dataToInsert.nropallet_recepcion,
         },
         select: {
           id: true,
         },
       });
-    console.log("aici", getIdForDeliveryReception?.id);
 
     if (getIdForDeliveryReception?.id) {
       const insertKgAndBaxexDeliveryReception =
