@@ -497,13 +497,7 @@ const RightSideContent = ({
           } else {
             setBaxesValueTotalComputation({
               _total: total,
-              _text:
-                baxesValue +
-                "*" +
-                String(kgFromDB) +
-                "kg = " +
-                String(total) +
-                "kg",
+              _text: String(total) + "kg",
             });
           }
 
@@ -605,7 +599,7 @@ const RightSideContent = ({
 
               <div className="flex flex-wrap mb-4">
                 <div className="w-full sm:w-3/12 flex items-center">
-                  <b>Carton bay</b>
+                  <b>Carton bax</b>
                 </div>
                 <div className="w-full sm:w-9/12">
                   <Input
@@ -638,7 +632,7 @@ const RightSideContent = ({
                 }
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
               >
-                Get number_pallet
+                Start processing
               </button>
               <>
                 <Modal
@@ -650,7 +644,7 @@ const RightSideContent = ({
                     {(onClose) => (
                       <>
                         <ModalHeader className="flex flex-col gap-1">
-                          Table
+                          Delivery Pallet
                         </ModalHeader>
                         <ModalBody
                           style={{ maxHeight: "80vh", overflow: "auto" }}
@@ -661,6 +655,8 @@ const RightSideContent = ({
                               <TableColumn>Nr Bax</TableColumn>
                               <TableColumn>KG</TableColumn>
                               <TableColumn>Bax Added</TableColumn>
+                              <TableColumn>Kg Added</TableColumn>
+
                               <TableColumn>Status</TableColumn>
                               <TableColumn>Select</TableColumn>
                             </TableHeader>
@@ -671,6 +667,8 @@ const RightSideContent = ({
                                   <TableCell>{entry.nr_bax}</TableCell>
                                   <TableCell>{entry.kg}</TableCell>
                                   <TableCell>{entry.bax_add}</TableCell>
+                                  <TableCell>{entry.kg_add}</TableCell>
+
                                   {renderStatusCell(entry)}
                                   <TableCell>
                                     {entry.state === 2
@@ -756,7 +754,7 @@ const RightSideContent = ({
                                 onClick={handleSecondaryModalButtonClick}
                                 color="success"
                               >
-                                Use selected boxes
+                                Use selected pallet
                               </Button>
                             </>
                           ) : (
@@ -907,7 +905,7 @@ const RightSideContent = ({
                         ) : (
                           <>
                             <ModalHeader className="flex flex-col gap-1">
-                              Is pallet partially finished?
+                              Is reception pallet partially finished?
                             </ModalHeader>
                             <ModalBody className="flex justify-center">
                               <Button
