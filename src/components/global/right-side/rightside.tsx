@@ -358,10 +358,27 @@ const RightSideContent = ({
   };
 
   const handleGroupButtonClick = async (answer: any) => {
+    // console.log("secondaryModalData", secondaryModalData)
+    let _nropallet_recepcion = ''
+    const _id = Number(nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey)
+    for (const i in secondaryModalData) {
+      console.log("secondaryModalData",secondaryModalData[i], Number(nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey))
+      if (secondaryModalData[i].id === _id) {
+        _nropallet_recepcion = secondaryModalData[i].nropallet_recepcion;
+      }
+      // if (Number(secondaryModalData[i].id) === Number(nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey)) {
+      //   _nropallet_recepcion = secondaryModalData[i][nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey]
+      //   break;
+      // }
+    }
+    console.log("secondaryModalData _nropallet_recepcion",_nropallet_recepcion);
+
+    // if (_nropallet_recepcion !== '')
+
     const dataToInsert = {
       numberBaxes: baxesValue,
       kgUsedBaxes: baxesValueTotalComputation._total,
-      nropallet_recepcion: nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey,
+      nropallet_recepcion: _nropallet_recepcion,
       state: 0,
       insertedId: nrPalletsDeliveryInProgress[boxesButtonClickId]["lastInsertedId"],
     };
