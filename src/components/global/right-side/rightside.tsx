@@ -190,7 +190,7 @@ const RightSideContent = ({
         _color = "success";
         break;
       case 3:
-        _text = "Partial finished";
+        _text = "Partially finished";
         _color = "warning";
         break;
       case 4:
@@ -230,7 +230,44 @@ const RightSideContent = ({
     );
   };
 
+  const renderTripleButton = (order: any, entry: any): JSX.Element => {
+    return (
+      <ButtonGroup>
+        <Button
+          color="primary"
+          onClick={() => {
+            handleRowClick(
+              order.idorden + "_" + order.id,
+              entry.iddelivery,
+              entry.nrpallet
+            );
+          }}
+        >
+          Select delivery
+        </Button>
+        <Button
+          color="danger"
+          onClick={() => {
+            handleAddBoxesButton(
+              order.punnet,
+              entry.nrpallet,
+              entry.iddelivery
+            );
+          }}
+        >
+          Add baxes
+        </Button>
+        <Button
+          color="success"
+        >
+          Finish pallet
+        </Button>
+      </ButtonGroup>
+    );
+  }
+
   const renderDoubleButton = (order: any, entry: any): JSX.Element => {
+    // console.log("nrr", Number(entry.nr_bax));
     return (
       <ButtonGroup>
         <Button
@@ -257,6 +294,15 @@ const RightSideContent = ({
         >
           Add baxes
         </Button>
+        {Number(entry.bax_add) > 0 ? (
+          <Button
+            color="warning"
+          >
+            Finish pallet
+          </Button>
+        ) : (
+          ''
+        )}
       </ButtonGroup>
     );
   };
@@ -629,7 +675,9 @@ const RightSideContent = ({
                                   <TableCell>
                                     {entry.state === 2
                                       ? renderDoubleButton(order, entry)
-                                      : renderSingleButton(order, entry)}
+                                      : ""}
+                                    {entry.state === 1
+                                      ? renderSingleButton(order, entry) : ""}
                                   </TableCell>
                                 </TableRow>
                               ))}
