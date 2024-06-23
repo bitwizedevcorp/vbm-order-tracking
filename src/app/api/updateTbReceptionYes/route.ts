@@ -55,7 +55,6 @@ export async function POST(req: Request) {
         data: {
           bax_add: Number(dataToInsert.numberBaxes),
           kg_add: dataToInsert.kgUsedBaxes,
-          state: 3,
         },
       });
 
