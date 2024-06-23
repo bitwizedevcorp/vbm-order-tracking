@@ -230,6 +230,17 @@ const RightSideContent = ({
     );
   };
 
+  const handleFinishButton = async (iddelivery: any) => {
+    try {
+      const res = await axios.get(`/api/finishDeliverPallet/${iddelivery}`);
+      if (res.status === 200) {
+        console.log("ddd", res);
+      }
+    } catch (error) {
+      console.log("ddd", error);
+    }
+  };
+
   const renderTripleButton = (order: any, entry: any): JSX.Element => {
     return (
       <ButtonGroup>
@@ -259,12 +270,15 @@ const RightSideContent = ({
         </Button>
         <Button
           color="success"
+          onClick={() => {
+            handleFinishButton(entry.iddelivery);
+          }}
         >
           Finish pallet
         </Button>
       </ButtonGroup>
     );
-  }
+  };
 
   const renderDoubleButton = (order: any, entry: any): JSX.Element => {
     // console.log("nrr", Number(entry.nr_bax));
@@ -297,11 +311,14 @@ const RightSideContent = ({
         {Number(entry.bax_add) > 0 ? (
           <Button
             color="warning"
+            onClick={() => {
+              handleFinishButton(entry.iddelivery);
+            }}
           >
             Finish pallet
           </Button>
         ) : (
-          ''
+          ""
         )}
       </ButtonGroup>
     );
@@ -675,7 +692,8 @@ const RightSideContent = ({
                                       ? renderDoubleButton(order, entry)
                                       : ""}
                                     {entry.state === 1
-                                      ? renderSingleButton(order, entry) : ""}
+                                      ? renderSingleButton(order, entry)
+                                      : ""}
                                   </TableCell>
                                 </TableRow>
                               ))}
@@ -691,7 +709,7 @@ const RightSideContent = ({
                             Close
                           </Button>
                           <Button color="primary" onPress={onClose}>
-                            Action
+                            Finish the order
                           </Button>
                         </ModalFooter>
                       </>
