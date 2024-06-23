@@ -304,14 +304,15 @@ const RightSideContent = ({
 
       for (const row of payload.selectedRows) {
         //let id = row.nropallet_recepcion; // Chair trb aici nropallet reception sau id? Daca trb nropallet recepotion, asta e in _nropallet_recepcion.nropallet_recepcion
-        let id = row;
+        let id = payload.nropallet_recepcion;
         try {
           const res = await axios.get(`/api/updateReceptionState/${id}`);
+          // alert("Updated reception state for ID:");
           console.log(
             "Updated reception state for ID:",
             id,
             "Response:",
-            res.data
+            res.data,
           );
         } catch (error) {
           console.error("Error updating reception state:", error);
