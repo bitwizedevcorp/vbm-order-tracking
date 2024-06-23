@@ -79,8 +79,10 @@ const RightSideContent = ({
   const [selectedLine, setSelectedLine] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<any>();
   const [boxesButtonClickId, setBoxesButtonClickId] = useState<any>();
-  const [secondaryModelDataLoaded, setSecondaryModelDataLoaded] = useState<any>();
-  const [addLineButtonTriggered, setAddLineButtonTriggered] = useState<any>(false);
+  const [secondaryModelDataLoaded, setSecondaryModelDataLoaded] =
+    useState<any>();
+  const [addLineButtonTriggered, setAddLineButtonTriggered] =
+    useState<any>(false);
 
   const handleSelectionChange = (e: any) => {
     nrPalletsDeliveryInProgress[nrPalletDelivery] = e; // 1st way working for all in progress
@@ -153,7 +155,7 @@ const RightSideContent = ({
         // Find the pallet you clicked currently on
         nrPalletsDeliveryInProgress[nrPalletDelivery] = selectedKeys;
         console.log("rowclick", nrPalletsDeliveryInProgress);
-  
+
         try {
           const res = await axios.get("/api/getLines");
           console.log(res.data);
@@ -277,9 +279,13 @@ const RightSideContent = ({
     //validate input
     setAddLineButtonTriggered(true);
     let inputIsOk: boolean = true;
-    let _selectedRows = [nrPalletsDeliveryInProgress[nrPalletDelivery].currentKey];
+    let _selectedRows = [
+      nrPalletsDeliveryInProgress[nrPalletDelivery].currentKey,
+    ];
 
-    const _nropallet_recepcion = secondaryModalData.find(data => data.id === Number(_selectedRows[0]));
+    const _nropallet_recepcion = secondaryModalData.find(
+      (data) => data.id === Number(_selectedRows[0])
+    );
 
     if (selectedLine === "") {
       inputIsOk = false;
@@ -293,7 +299,7 @@ const RightSideContent = ({
         selectedRows: _selectedRows,
         workLine,
         nrPalletDelivery,
-        nropallet_recepcion: _nropallet_recepcion.nropallet_recepcion
+        nropallet_recepcion: _nropallet_recepcion.nropallet_recepcion,
       };
 
       console.log("Payload before prompt:", payload);
@@ -312,7 +318,7 @@ const RightSideContent = ({
             "Updated reception state for ID:",
             id,
             "Response:",
-            res.data,
+            res.data
           );
         } catch (error) {
           console.error("Error updating reception state:", error);
@@ -328,14 +334,17 @@ const RightSideContent = ({
 
           let foundKey: string = "";
           for (const key in nrPalletsDeliveryInProgress) {
-            if (nrPalletsDeliveryInProgress[key].anchorKey === _selectedRows[0]) {
+            if (
+              nrPalletsDeliveryInProgress[key].anchorKey === _selectedRows[0]
+            ) {
               foundKey = key;
-              break; 
+              break;
             }
           }
 
           if (foundKey != "") {
-            nrPalletsDeliveryInProgress[foundKey]["lastInsertedId"] = res.data.data;
+            nrPalletsDeliveryInProgress[foundKey]["lastInsertedId"] =
+              res.data.data;
           }
           console.log("ROWCL", nrPalletsDeliveryInProgress);
           handleThirdModalClose();
@@ -347,7 +356,7 @@ const RightSideContent = ({
         console.error("Error:", error);
       }
     }
-    
+
     setAddLineButtonTriggered(false);
     //close modal 3
     handleThirdModalClose();
@@ -359,10 +368,16 @@ const RightSideContent = ({
 
   const handleGroupButtonClick = async (answer: any) => {
     // console.log("secondaryModalData", secondaryModalData)
-    let _nropallet_recepcion = ''
-    const _id = Number(nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey)
+    let _nropallet_recepcion = "";
+    const _id = Number(
+      nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey
+    );
     for (const i in secondaryModalData) {
-      console.log("secondaryModalData",secondaryModalData[i], Number(nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey))
+      console.log(
+        "secondaryModalData",
+        secondaryModalData[i],
+        Number(nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey)
+      );
       if (secondaryModalData[i].id === _id) {
         _nropallet_recepcion = secondaryModalData[i].nropallet_recepcion;
       }
@@ -371,7 +386,10 @@ const RightSideContent = ({
       //   break;
       // }
     }
-    console.log("secondaryModalData _nropallet_recepcion",_nropallet_recepcion);
+    console.log(
+      "secondaryModalData _nropallet_recepcion",
+      _nropallet_recepcion
+    );
 
     // if (_nropallet_recepcion !== '')
 
@@ -380,18 +398,20 @@ const RightSideContent = ({
       kgUsedBaxes: baxesValueTotalComputation._total,
       nropallet_recepcion: _nropallet_recepcion,
       state: 0,
-      insertedId: nrPalletsDeliveryInProgress[boxesButtonClickId]["lastInsertedId"],
+      insertedId:
+        nrPalletsDeliveryInProgress[boxesButtonClickId]["lastInsertedId"],
     };
 
     if (answer === "no") {
       dataToInsert.state = 1;
 
       try {
-        console.log("datatoinsert", dataToInsert);
         const res = await axios.post(`/api/updateTbReceptionNo/`, dataToInsert);
       } catch (error) {}
     } else {
+      console.log("intru in yes");
       dataToInsert.state = 3;
+      const res = await axios.post(`/api/updateTbReceptionYes/`, dataToInsert);
     }
 
     setShowSecondContent(false);
@@ -633,7 +653,9 @@ const RightSideContent = ({
                                 selectedKeys={
                                   nrPalletsDeliveryInProgress[nrPalletDelivery]
                                 }
-                                onSelectionChange={(e) => handleSelectionChange(e)}
+                                onSelectionChange={(e) =>
+                                  handleSelectionChange(e)
+                                }
                               >
                                 <TableHeader>
                                   <TableColumn>fecha</TableColumn>
@@ -648,8 +670,12 @@ const RightSideContent = ({
                                       <TableCell>
                                         {formatDate(data.fecha)}
                                       </TableCell>
-                                      <TableCell>{data.kg_disponible}</TableCell>
-                                      <TableCell>{data.box_disponible}</TableCell>
+                                      <TableCell>
+                                        {data.kg_disponible}
+                                      </TableCell>
+                                      <TableCell>
+                                        {data.box_disponible}
+                                      </TableCell>
                                       <TableCell>
                                         {data.nropallet_recepcion}
                                       </TableCell>
@@ -667,7 +693,11 @@ const RightSideContent = ({
                             </>
                           ) : (
                             <>
-                              <Spinner label="Loading..." color="warning" className="flex justify-center"/>
+                              <Spinner
+                                label="Loading..."
+                                color="warning"
+                                className="flex justify-center"
+                              />
                             </>
                           )}
                         </ModalBody>
@@ -700,7 +730,11 @@ const RightSideContent = ({
                         {addLineButtonTriggered ? (
                           <>
                             <ModalBody>
-                              <Spinner label="Adding in dbs..." color="success" className="flex justify-center"/>
+                              <Spinner
+                                label="Adding in dbs..."
+                                color="success"
+                                className="flex justify-center"
+                              />
                             </ModalBody>
                             <ModalFooter>
                               <Button
@@ -754,7 +788,6 @@ const RightSideContent = ({
                             </ModalFooter>
                           </>
                         )}
-                        
                       </>
                     )}
                   </ModalContent>
