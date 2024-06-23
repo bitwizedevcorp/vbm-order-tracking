@@ -501,6 +501,15 @@ const RightSideContent = ({
     setIsFourthModalOpen(false);
   };
 
+  const finsihTheOrderDetailsButton = async () => {
+    try {
+      const res = await axios.get(`/api/finsihOrder/${selectedOrder[0].id}`);
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     if (isFourthModalOpen) {
       if (querryDoneForPunnet) {
@@ -708,7 +717,7 @@ const RightSideContent = ({
                           >
                             Close
                           </Button>
-                          <Button color="primary" onPress={onClose}>
+                          <Button color="primary" onClick={() => {finsihTheOrderDetailsButton()}}>
                             Finish the order
                           </Button>
                         </ModalFooter>

@@ -3,9 +3,10 @@ import prisma from "../../../../../lib/prisma";
 
 export async function GET(
   req: Request,
-  { params }: { params: { idOrder: string } }
+  { params }: { params: { idorder: string } }
 ) {
-  const id = params.idOrder;
+  // console.log(params);
+  const id = params.idorder;
   try {
     // Fetch all order details for the given order id
     const getAllOrderDetail = await prisma.tb_orden_detail.findMany({
