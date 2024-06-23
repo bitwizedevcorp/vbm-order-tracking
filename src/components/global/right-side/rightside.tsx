@@ -370,7 +370,7 @@ const RightSideContent = ({
       }
     }
     // console.log("secondaryModalData _nropallet_recepcion",_nropallet_recepcion);
-
+    // console.log("selectedOrder", selectedOrder);
     // if (_nropallet_recepcion !== '')
     const dataToInsert = {
       numberBaxes: baxesValue,
@@ -378,7 +378,9 @@ const RightSideContent = ({
       nropallet_recepcion: _nropallet_recepcion,
       state: 0,
       insertedId: nrPalletsDeliveryInProgress[boxesButtonClickId]["lastInsertedId"],
-      idDeliveryClicked: idDeliveryClicked
+      idDeliveryClicked: idDeliveryClicked,
+      idOrder: selectedOrder.idorden,
+      idOrdenDetails: selectedOrder.id,
     };
 
     if (answer === "no") {
