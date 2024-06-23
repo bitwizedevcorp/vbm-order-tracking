@@ -79,10 +79,9 @@ const RightSideContent = ({
   const [selectedLine, setSelectedLine] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<any>();
   const [boxesButtonClickId, setBoxesButtonClickId] = useState<any>();
-  const [secondaryModelDataLoaded, setSecondaryModelDataLoaded] =
-    useState<any>();
-  const [addLineButtonTriggered, setAddLineButtonTriggered] =
-    useState<any>(false);
+  const [secondaryModelDataLoaded, setSecondaryModelDataLoaded] = useState<any>();
+  const [addLineButtonTriggered, setAddLineButtonTriggered] = useState<any>(false);
+  const [idDeliveryClicked, setIdDeliveryClicked] = useState<any>();
 
   const handleSelectionChange = (e: any) => {
     nrPalletsDeliveryInProgress[nrPalletDelivery] = e; // 1st way working for all in progress
@@ -239,7 +238,7 @@ const RightSideContent = ({
         <Button
           color="success"
           onClick={() => {
-            handleAddBoxesButton(order.punnet, entry.nrpallet);
+            handleAddBoxesButton(order.punnet, entry.nrpallet, entry.iddelivery);
           }}
         >
           Add baxes
@@ -248,8 +247,9 @@ const RightSideContent = ({
     );
   };
 
-  const handleAddBoxesButton = async (punnet: any, nrPalletClicked: any) => {
+  const handleAddBoxesButton = async (punnet: any, nrPalletClicked: any, iddelivery: any) => {
     setBoxesButtonClickId(nrPalletClicked);
+    setIdDeliveryClicked(iddelivery);
     handleFourthModalOpen();
     console.log("pun", punnet, nrPalletClicked);
     if (!querryDoneForPunnet) {
@@ -381,25 +381,24 @@ const RightSideContent = ({
       if (secondaryModalData[i].id === _id) {
         _nropallet_recepcion = secondaryModalData[i].nropallet_recepcion;
       }
-      // if (Number(secondaryModalData[i].id) === Number(nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey)) {
-      //   _nropallet_recepcion = secondaryModalData[i][nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey]
-      //   break;
-      // }
     }
+
     console.log(
       "secondaryModalData _nropallet_recepcion",
       _nropallet_recepcion
     );
-
+    // console.log("secondaryModalData _nropallet_recepcion",_nropallet_recepcion);
+    // console.log("selectedOrder", selectedOrder);
     // if (_nropallet_recepcion !== '')
-
     const dataToInsert = {
       numberBaxes: baxesValue,
       kgUsedBaxes: baxesValueTotalComputation._total,
       nropallet_recepcion: _nropallet_recepcion,
       state: 0,
-      insertedId:
-        nrPalletsDeliveryInProgress[boxesButtonClickId]["lastInsertedId"],
+      insertedId: nrPalletsDeliveryInProgress[boxesButtonClickId]["lastInsertedId"],
+      idDeliveryClicked: idDeliveryClicked,
+      idOrder: selectedOrder.idorden,
+      idOrdenDetails: selectedOrder.id,
     };
 
     if (answer === "no") {
