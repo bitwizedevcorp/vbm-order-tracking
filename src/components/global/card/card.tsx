@@ -15,11 +15,10 @@ const CardClient = ({
   clients,
   onOrderClick,
   orderDetailsLoadedCallback,
-}) => {
-
-  const handleClick = async (id) => {
+}: any) => {
+  const handleClick = async (id: any) => {
     orderDetailsLoadedCallback(false);
-    onOrderClick({"dummy": "dummy"}); // Send a dummy object for the loading screen to be triggered. If statement needs a non-empty variable to check for loading rendering
+    onOrderClick({ dummy: "dummy" }); // Send a dummy object for the loading screen to be triggered. If statement needs a non-empty variable to check for loading rendering
     try {
       const res = await axios.get(`/api/getOrderDetail/${id}`);
       onOrderClick(res.data.orderDetail);
@@ -35,7 +34,7 @@ const CardClient = ({
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   if (clients.length === 0) {
     return (
@@ -47,11 +46,11 @@ const CardClient = ({
         </Card>
       </div>
     );
-  } 
+  }
 
   return (
     <>
-      {clients.map((client, index) => (
+      {clients.map((client: any, index: any) => (
         <div key={index} className="p-4">
           <button
             className="focus:outline-none w-full"
@@ -75,10 +74,7 @@ const CardClient = ({
                   </div>
                 </div>
                 <div className="flex items-center">
-                  <Button
-                    color="success"
-                    onClick={handleFinishOrderButton}
-                  >
+                  <Button color="success" onClick={handleFinishOrderButton}>
                     Finish order
                   </Button>
                 </div>
