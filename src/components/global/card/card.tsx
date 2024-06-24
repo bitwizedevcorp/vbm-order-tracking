@@ -28,11 +28,37 @@ const CardClient = ({
     }
   };
 
-  const handleFinishOrderButton = () => {
+  const handleFinishOrderButton = async () => {
     try {
-      const res = axios.get(`/api/finishOrder/${clients[0].idorden}`);
-    } catch (error) {
-      console.log(error);
+      const res = await axios.get(`/api/finishOrder/${clients[0].idorden}`);
+      if (res.status === 200) {
+        alert("Order is finished!");
+      } else if (res.status === 403) {
+        alert("We can't finish the order yet!");
+      } else {
+        alert("Unexpected response status: " + res.status);
+      }
+    } catch (error: any) {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error("Error response:", error.response);
+        if (error.response.status === 500) {
+          alert("Internal server error. Please try again later.");
+        } else {
+          alert("An error occurred: " + error.response.data.message);
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error("Error request:", error.request);
+        alert(
+          "No response from server. Please check your internet connection."
+        );
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error("Error message:", error.message);
+        alert("An error occurred: " + error.message);
+      }
     }
   };
 

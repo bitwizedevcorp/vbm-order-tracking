@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: { idorden_idpunnet: string } }
 ) {
   const [idorden, idpunnet] = params.idorden_idpunnet.split("_");
-
+  console.log(params.idorden_idpunnet);
   try {
     // Fetch the associated orders
     const data = await prisma.tb_reception_asociados_order.findMany({
@@ -69,6 +69,8 @@ export async function GET(
         dataToSend.push(n);
       }
     }
+
+    console.log(dataToSend);
 
     return NextResponse.json(dataToSend);
   } catch (error) {

@@ -234,7 +234,9 @@ const RightSideContent = ({
     try {
       const res = await axios.get(`/api/finishDeliverPallet/${iddelivery}`);
       if (res.status === 200) {
-        console.log("ddd", res);
+        alert("This pallet was finished");
+      } else {
+        alert("The pallet wasn`t finished");
       }
     } catch (error) {
       console.log("ddd", error);
@@ -507,6 +509,11 @@ const RightSideContent = ({
       const res = await axios.get(
         `/api/finshOrderDetail/${selectedOrder[0].id}`
       );
+      if (res.status === 200) {
+        alert("This order detailed was finished!");
+      } else {
+        alert("This order detailed wasn`t finished!");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -592,6 +599,7 @@ const RightSideContent = ({
           <Card key={index} className="max-w-[600px] mx-auto">
             <CardHeader className="flex gap-3">
               <b>Order details</b>
+              <p>{order.state}</p>
             </CardHeader>
             <Divider />
             <CardBody>
@@ -725,7 +733,7 @@ const RightSideContent = ({
                               finsihTheOrderDetailsButton();
                             }}
                           >
-                            Finish the order
+                            Finish order detail
                           </Button>
                         </ModalFooter>
                       </>
@@ -742,7 +750,7 @@ const RightSideContent = ({
                     {(onClose) => (
                       <>
                         <ModalHeader className="flex flex-col gap-1">
-                          Secondary Modal
+                          Reception Pallet
                         </ModalHeader>
                         <ModalBody>
                           {secondaryModelDataLoaded ? (
@@ -762,7 +770,7 @@ const RightSideContent = ({
                                   <TableColumn>Kg Availablle</TableColumn>
                                   <TableColumn>Bax Available</TableColumn>
                                   <TableColumn>nropallet_recepcion</TableColumn>
-                                  <TableColumn>estado</TableColumn>
+                                  <TableColumn>state</TableColumn>
                                 </TableHeader>
                                 <TableBody>
                                   {secondaryModalData.map((data: any) => (
@@ -779,7 +787,7 @@ const RightSideContent = ({
                                       <TableCell>
                                         {data.nropallet_recepcion}
                                       </TableCell>
-                                      <TableCell>{data.estado}</TableCell>
+                                      <TableCell>{data.state}</TableCell>
                                     </TableRow>
                                   ))}
                                 </TableBody>

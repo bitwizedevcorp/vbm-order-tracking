@@ -46,7 +46,7 @@ const Footer = () => {
             <br />
             <br />
             {/* middle div */}
-            <div className="flex flex-col gap-8 relative">
+            {/* <div className="flex flex-col gap-8 relative">
               <p className="text-[22px] font-bold footer-main">Menu</p>
 
               <span className="top-[33px] absolute w-[7rem] h-[4px] bg-[#ff0366]"></span>
@@ -63,7 +63,7 @@ const Footer = () => {
               <p className="text-[16px] hover:text-[#ff0366] cursor-pointer text-[#646464] font-medium hover:font-bold">
                 Contact us
               </p>
-            </div>
+            </div> */}
 
             {/* right div */}
             {/* <div className="flex flex-col gap-8 relative">
