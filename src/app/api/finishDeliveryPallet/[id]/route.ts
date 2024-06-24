@@ -6,6 +6,7 @@ export async function GET(
   { params }: { params: { iddelivery: string } }
 ) {
   const id = params.iddelivery;
+  console.log(params.iddelivery);
   try {
     const data = await prisma.tb_delivery_pallet.update({
       where: {

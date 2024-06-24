@@ -504,7 +504,9 @@ const RightSideContent = ({
 
   const finsihTheOrderDetailsButton = async () => {
     try {
-      const res = await axios.get(`/api/finsihOrder/${selectedOrder[0].id}`);
+      const res = await axios.get(
+        `/api/finshOrderDetail/${selectedOrder[0].id}`
+      );
     } catch (error) {
       console.log(error);
     }
