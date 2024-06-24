@@ -421,3 +421,25 @@ model tb_inout {
   invoice    Int
   provider   String   @db.VarChar(100)
 }
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tb_request {
+  idrequest   Int      @id
+  idrequestby Int
+  fecha       DateTime @db.DateTime(0)
+  obs         String   @db.VarChar(200)
+  priority    Int
+  status      Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tb_request_detail {
+  id            Int      @id
+  idrequest     Int
+  delivery_date DateTime @db.DateTime(0)
+  idproduct     Int
+  quantity      Int
+  delivered     Int
+  obs           String   @db.LongText
+  status        Int
+}
