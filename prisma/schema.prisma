@@ -408,3 +408,16 @@ model tb_product {
   subplace   String  @default("0") @db.VarChar(10)
   stock      Int     @default(0)
 }
+
+model tb_inout {
+  id         Int      @id
+  idproduct  Int
+  fecha      DateTime @db.DateTime(0)
+  idrequest  Int
+  idproducer Int      @default(0)
+  in_        Int
+  out_       Int
+  quantity   Int
+  invoice    Int
+  provider   String   @db.VarChar(100)
+}
