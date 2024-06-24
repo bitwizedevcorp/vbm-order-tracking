@@ -6,7 +6,6 @@ export async function GET(
   { params }: { params: { idorden_idpunnet: string } }
 ) {
   const [idorden, idpunnet] = params.idorden_idpunnet.split("_");
-
   try {
     const data = await prisma.tb_delivery_pallet.findMany({
       where: {

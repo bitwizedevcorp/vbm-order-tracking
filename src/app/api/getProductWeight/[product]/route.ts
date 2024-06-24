@@ -11,13 +11,14 @@ export async function GET(
       { status: 405 }
     );
   }
-  //console.log("intru");
+  console.log("intru");
+  console.log(params);
   const product = params.product;
 
   try {
     const orderDetail = await prisma.tb_product.findFirst({
       where: {
-        product: product, // Convert idorden to a number if needed
+        idproduct: Number(product), // Convert idorden to a number if needed
       },
       select: {
         weight: true,

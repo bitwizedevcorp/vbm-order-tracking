@@ -260,7 +260,7 @@ const RightSideContent = ({
           color="danger"
           onClick={() => {
             handleAddBoxesButton(
-              order.punnet,
+              order.idpunnet,
               entry.nrpallet,
               entry.iddelivery
             );
@@ -300,7 +300,7 @@ const RightSideContent = ({
           color="success"
           onClick={() => {
             handleAddBoxesButton(
-              order.punnet,
+              order.idpunnet,
               entry.nrpallet,
               entry.iddelivery
             );
@@ -335,6 +335,7 @@ const RightSideContent = ({
     console.log("pun", punnet, nrPalletClicked);
     if (!querryDoneForPunnet) {
       try {
+        console.log("orderDetailed", punnet);
         const res = await axios.get(`/api/getProductWeight/${punnet}`);
         setQuerryDoneForPunent(true);
         setDataWeightPunnet(res.data.orderDetail.weight);
@@ -504,11 +505,10 @@ const RightSideContent = ({
   const finsihTheOrderDetailsButton = async () => {
     try {
       const res = await axios.get(`/api/finsihOrder/${selectedOrder[0].id}`);
-
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
     if (isFourthModalOpen) {
@@ -717,7 +717,12 @@ const RightSideContent = ({
                           >
                             Close
                           </Button>
-                          <Button color="primary" onClick={() => {finsihTheOrderDetailsButton()}}>
+                          <Button
+                            color="primary"
+                            onClick={() => {
+                              finsihTheOrderDetailsButton();
+                            }}
+                          >
                             Finish the order
                           </Button>
                         </ModalFooter>
