@@ -27,7 +27,11 @@ export async function POST(req: Request) {
       insertedIds.push(insertDb.id);
     }
 
-    return NextResponse.json({ message: "Success", status: 200, data: insertedIds[0] }); //considering just 1 entry
+    return NextResponse.json({
+      message: "Success",
+      status: 200,
+      data: insertedIds[0],
+    });
   } catch (err) {
     console.error("Error in POST endpoint:", err);
     return NextResponse.json({ message: "Error", status: 500 });

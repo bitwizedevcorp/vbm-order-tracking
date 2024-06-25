@@ -16,7 +16,6 @@ export async function GET(
       );
     }
 
-    // Fetch all order details for the given order id
     const getAllOrderDetail = await prisma.tb_orden_detail.findMany({
       where: {
         idorden: Number(id),
@@ -32,13 +31,11 @@ export async function GET(
       );
     }
 
-    // Check if all order details have state 4
     const allDetailsCompleted = getAllOrderDetail.every(
       (orderDetail) => orderDetail.state === 4
     );
 
     if (allDetailsCompleted) {
-      // Update the order state to 4
       await prisma.tb_orden.update({
         where: {
           idorden: Number(id),

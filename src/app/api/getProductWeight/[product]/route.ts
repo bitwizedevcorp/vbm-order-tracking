@@ -11,14 +11,13 @@ export async function GET(
       { status: 405 }
     );
   }
-  console.log("intru");
-  console.log(params);
+
   const product = params.product;
 
   try {
     const orderDetail = await prisma.tb_product.findFirst({
       where: {
-        idproduct: Number(product), // Convert idorden to a number if needed
+        idproduct: Number(product),
       },
       select: {
         weight: true,
@@ -27,7 +26,7 @@ export async function GET(
 
     return NextResponse.json({
       message: "Your order detail",
-      orderDetail: orderDetail, // Corrected key name
+      orderDetail: orderDetail,
     });
   } catch (error) {
     console.error(error);

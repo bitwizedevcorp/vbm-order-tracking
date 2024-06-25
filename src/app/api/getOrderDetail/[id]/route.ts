@@ -9,18 +9,17 @@ export async function GET(req: Request, { params }: { params: { id: any } }) {
     );
   }
   const idorden = params.id;
-  //console.log("aiaia", params.id);
 
   try {
     const orderDetail = await prisma.tb_orden_detail.findMany({
       where: {
-        idorden: Number(idorden), // Convert idorden to a number if needed
+        idorden: Number(idorden),
       },
     });
 
     return NextResponse.json({
       message: "Your order detail",
-      orderDetail: orderDetail, // Corrected key name
+      orderDetail: orderDetail,
     });
   } catch (error) {
     console.error(error);

@@ -90,9 +90,6 @@ const RightSideContent = ({
     setSelectedKeys(e); // 2nd way working for just 1
   };
 
-  console.log("Order details loaded from rightside: ", orderDetailsLoaded);
-  console.log("Selected order", selectedOrder);
-
   const handlerClickDeliveryPallet = async (idorden_idpunnet: any) => {
     handleMainModalOpen();
     try {
@@ -169,7 +166,7 @@ const RightSideContent = ({
     }
   };
 
-  const renderStatusCell = (data: any): JSX.Element => {
+  const renderStatusCell = (data: any, obj: any): JSX.Element => {
     let _text = data.state;
     let _color:
       | "primary"
@@ -597,9 +594,10 @@ const RightSideContent = ({
       <div className="space-y-4 px-4">
         {selectedOrder.map((order: any, index: any) => (
           <Card key={index} className="max-w-[600px] mx-auto">
-            <CardHeader className="flex gap-3">
+            <CardHeader className="flex gap-9">
               <b>Order details</b>
-              <p>{order.state}</p>
+
+              <p>Status: {order.state}</p>
             </CardHeader>
             <Divider />
             <CardBody>

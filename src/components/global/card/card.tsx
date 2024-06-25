@@ -40,8 +40,6 @@ const CardClient = ({
       }
     } catch (error: any) {
       if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
         console.error("Error response:", error.response);
         if (error.response.status === 500) {
           alert("Internal server error. Please try again later.");
