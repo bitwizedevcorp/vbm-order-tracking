@@ -166,7 +166,7 @@ const RightSideContent = ({
     }
   };
 
-  const renderStatusCell = (data: any, obj: any): JSX.Element => {
+  const renderStatusCell = (data: any): JSX.Element => {
     let _text = data.state;
     let _color:
       | "primary"
