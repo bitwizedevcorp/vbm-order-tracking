@@ -66,7 +66,10 @@ const RightSideContent = ({
   const handleThirdModalClose = () => setIsThirdModalOpen(false);
 
   const handleFourthModalOpen = () => setIsFourthModalOpen(true);
-  const handleFourthModalClose = () => setIsFourthModalOpen(false);
+  const handleFourthModalClose = () => {
+    setIsFourthModalOpen(false);
+    setShowSecondContent(false);
+  };
 
   const [deliveryData, setDeliveryData] = useState([]);
   const [secondaryModalData, setSecondaryModalData] = useState<any[]>([]);
@@ -240,45 +243,6 @@ const RightSideContent = ({
     }
   };
 
-  const renderTripleButton = (order: any, entry: any): JSX.Element => {
-    return (
-      <ButtonGroup>
-        <Button
-          color="primary"
-          onClick={() => {
-            handleRowClick(
-              order.idorden + "_" + order.id,
-              entry.iddelivery,
-              entry.nrpallet
-            );
-          }}
-        >
-          Select delivery
-        </Button>
-        <Button
-          color="danger"
-          onClick={() => {
-            handleAddBoxesButton(
-              order.idpunnet,
-              entry.nrpallet,
-              entry.iddelivery
-            );
-          }}
-        >
-          Add baxes
-        </Button>
-        <Button
-          color="success"
-          onClick={() => {
-            handleFinishButton(entry.iddelivery);
-          }}
-        >
-          Finish pallet
-        </Button>
-      </ButtonGroup>
-    );
-  };
-
   const renderDoubleButton = (order: any, entry: any): JSX.Element => {
     // console.log("nrr", Number(entry.nr_bax));
     return (
@@ -299,6 +263,7 @@ const RightSideContent = ({
           color="success"
           onClick={() => {
             handleAddBoxesButton(
+              order.punnet,
               order.idpunnet,
               entry.nrpallet,
               entry.iddelivery
@@ -325,6 +290,7 @@ const RightSideContent = ({
 
   const handleAddBoxesButton = async (
     punnet: any,
+    idpunnet: any,
     nrPalletClicked: any,
     iddelivery: any
   ) => {
@@ -335,7 +301,7 @@ const RightSideContent = ({
     if (!querryDoneForPunnet) {
       try {
         console.log("orderDetailed", punnet);
-        const res = await axios.get(`/api/getProductWeight/${punnet}`);
+        const res = await axios.get(`/api/getProductWeight/${idpunnet}`);
         setQuerryDoneForPunent(true);
         setDataWeightPunnet(res.data.orderDetail.weight);
       } catch (error) {
