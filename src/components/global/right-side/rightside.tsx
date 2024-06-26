@@ -87,6 +87,9 @@ const RightSideContent = ({
   const [addLineButtonTriggered, setAddLineButtonTriggered] =
     useState<any>(false);
   const [idDeliveryClicked, setIdDeliveryClicked] = useState<any>();
+  const [detailsDeleiveryReception, setDetailsDeliveryReception] = useState<
+    any[]
+  >([]);
 
   const handleSelectionChange = (e: any) => {
     nrPalletsDeliveryInProgress[nrPalletDelivery] = e; // 1st way working for all in progress
@@ -349,11 +352,7 @@ const RightSideContent = ({
         nropallet_recepcion: _nropallet_recepcion.nropallet_recepcion,
       };
 
-      console.log("Payload before prompt:", payload);
-
       payload.workLine = selectedLine;
-
-      console.log(payload);
 
       for (const row of payload.selectedRows) {
         //let id = row.nropallet_recepcion; // Chair trb aici nropallet reception sau id? Daca trb nropallet recepotion, asta e in _nropallet_recepcion.nropallet_recepcion
@@ -394,6 +393,18 @@ const RightSideContent = ({
               res.data.data;
           }
           console.log("ROWCL", nrPalletsDeliveryInProgress);
+          const [idorden, idpunnet] = idorden_idpunnet.split("_");
+          setDetailsDeliveryReception((prevDetails) => [
+            ...prevDetails,
+            {
+              id: res.data.data,
+              idorden: idorden,
+              idpunnet: idpunnet,
+              nropallet_delivery: nrPalletDelivery,
+              nropallet_recepcion: _nropallet_recepcion?.nropallet_recepcion,
+            },
+          ]);
+
           handleThirdModalClose();
           handleSecondModalClose();
         } else {
@@ -416,6 +427,8 @@ const RightSideContent = ({
   const handleGroupButtonClick = async (answer: any) => {
     // console.log("secondaryModalData", secondaryModalData)
     let _nropallet_recepcion = "";
+    if (nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey) {
+    }
     const _id = Number(
       nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey
     );
@@ -434,22 +447,19 @@ const RightSideContent = ({
       "secondaryModalData _nropallet_recepcion",
       _nropallet_recepcion
     );
-    // console.log("secondaryModalData _nropallet_recepcion",_nropallet_recepcion);
-    // console.log("selectedOrder", selectedOrder);
-    // if (_nropallet_recepcion !== '')
+
     const dataToInsert = {
+      ...detailsDeleiveryReception,
       numberBaxes: baxesValue,
       kgUsedBaxes: baxesValueTotalComputation._total,
-      nropallet_recepcion: _nropallet_recepcion,
+      // nropallet_recepcion: _nropallet_recepcion,
       state: 0,
-      insertedId:
-        nrPalletsDeliveryInProgress[boxesButtonClickId]["lastInsertedId"],
+      // insertedId:
+      // nrPalletsDeliveryInProgress[boxesButtonClickId]["lastInsertedId"],
       idDeliveryClicked: idDeliveryClicked,
-      idOrder: selectedOrder[0].idorden,
-      idOrdenDetails: selectedOrder[0].id,
+      //idOrder: selectedOrder[0].idorden,
+      //idOrdenDetails: selectedOrder[0].id,
     };
-
-    console.log("datatoinsert:", dataToInsert);
 
     if (answer === "no") {
       dataToInsert.state = 1;
