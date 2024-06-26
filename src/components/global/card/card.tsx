@@ -98,7 +98,7 @@ const CardClient = ({
                   </div>
                 </div>
                 <div className="flex items-center">
-                  <Button color="success" onClick={handleFinishOrderButton}>
+                  <Button color="primary" onClick={handleFinishOrderButton}>
                     Finish order
                   </Button>
                 </div>

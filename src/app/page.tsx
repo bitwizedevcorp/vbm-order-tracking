@@ -42,7 +42,7 @@ const Home = () => {
 
   return (
     <div className="flex h-screen">
-      <div className="w-[35%] bg-gray-100">
+      <div className="w-[30%] bg-gray-100">
         {!ordersLoaded ? (
           <div className="p-4 flex justify-center">
             <Progress
@@ -57,7 +57,7 @@ const Home = () => {
           <CardClient clients={data} onOrderClick={handleOrderClick} orderDetailsLoadedCallback={handleOrderDetailsLoadedCallback}/>
         )}
       </div>
-      <div className="w-[65%] bg-white">
+      <div className="w-[70%] bg-white">
         <div className="p-4">
           <RightSideContent
             selectedOrder={selectedOrder}

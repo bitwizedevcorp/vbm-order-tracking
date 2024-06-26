@@ -76,7 +76,9 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), nextui()],
+  plugins: [require("tailwindcss-animate"), nextui({
+    addCommonColors: true,
+  })],
 } satisfies Config;
 
 export default config;

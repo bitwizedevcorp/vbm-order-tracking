@@ -172,8 +172,8 @@ const RightSideContent = ({
     }
   };
 
-  const renderStatusCell = (data: any): JSX.Element => {
-    let _text = data.state;
+  const renderChip = (chipStatus: any): JSX.Element => {
+    let _text = chipStatus;
     let _color:
       | "primary"
       | "warning"
@@ -183,7 +183,7 @@ const RightSideContent = ({
       | "danger"
       | undefined = "primary";
 
-    switch (data.state) {
+    switch (Number(chipStatus)) {
       case 1:
         _text = "Waiting";
         _color = "warning";
@@ -202,16 +202,22 @@ const RightSideContent = ({
         break;
 
       default:
-        _text = data.state;
+        _text = chipStatus;
         _color = "primary";
         break;
     }
 
     return (
+      <Chip className="capitalize" color={_color} size="sm" variant="flat">
+        {_text}
+      </Chip>
+    )
+  }
+
+  const renderStatusCell = (data: any): JSX.Element => {
+    return (
       <TableCell>
-        <Chip className="capitalize" color={_color} size="sm" variant="flat">
-          {_text}
-        </Chip>
+        {renderChip(data.state)}
       </TableCell>
     );
   };
@@ -425,52 +431,61 @@ const RightSideContent = ({
   };
 
   const handleGroupButtonClick = async (answer: any) => {
-    // console.log("secondaryModalData", secondaryModalData)
     let _nropallet_recepcion = "";
-    if (nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey) {
-    }
-    const _id = Number(
-      nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey
-    );
-    for (const i in secondaryModalData) {
-      console.log(
-        "secondaryModalData",
-        secondaryModalData[i],
-        Number(nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey)
-      );
-      if (secondaryModalData[i].id === _id) {
-        _nropallet_recepcion = secondaryModalData[i].nropallet_recepcion;
+    let dataToInsert;
+    // If the pallets were selected in the current session
+    // This logic might be dropped based on Bogdan's new logic for backend
+    if (nrPalletsDeliveryInProgress[boxesButtonClickId]) {
+      
+      if (nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey) {
       }
+      const _id = Number(
+        nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey
+      );
+      
+      for (const i in secondaryModalData) {
+        // Get which nropallet_recepcion was used (if it exists in the session)
+        if (secondaryModalData[i].id === _id) {
+          _nropallet_recepcion = secondaryModalData[i].nropallet_recepcion;
+        }
+      }
+
+      dataToInsert = {
+          ...detailsDeleiveryReception,
+          numberBaxes: baxesValue,
+          kgUsedBaxes: baxesValueTotalComputation._total,
+          nropallet_recepcion: _nropallet_recepcion,
+          state: 0,
+          insertedId: nrPalletsDeliveryInProgress[boxesButtonClickId]["lastInsertedId"],
+          idDeliveryClicked: idDeliveryClicked,
+          idOrder: selectedOrder[0].idorden,
+          idOrdenDetails: selectedOrder[0].id,
+        };
+    } else { // If the pallets were NOT selected in the current session
+             // AKA: New logic without a necessary click on the desired pallets
+      dataToInsert = {
+        ...detailsDeleiveryReception,
+        numberBaxes: baxesValue,
+        kgUsedBaxes: baxesValueTotalComputation._total,
+        state: 0,
+        idDeliveryClicked: idDeliveryClicked,
+      };
     }
-
-    console.log(
-      "secondaryModalData _nropallet_recepcion",
-      _nropallet_recepcion
-    );
-
-    const dataToInsert = {
-      ...detailsDeleiveryReception,
-      numberBaxes: baxesValue,
-      kgUsedBaxes: baxesValueTotalComputation._total,
-      // nropallet_recepcion: _nropallet_recepcion,
-      state: 0,
-      // insertedId:
-      // nrPalletsDeliveryInProgress[boxesButtonClickId]["lastInsertedId"],
-      idDeliveryClicked: idDeliveryClicked,
-      //idOrder: selectedOrder[0].idorden,
-      //idOrdenDetails: selectedOrder[0].id,
-    };
 
     if (answer === "no") {
       dataToInsert.state = 1;
-
       try {
         const res = await axios.post(`/api/updateTbReceptionNo/`, dataToInsert);
-      } catch (error) {}
+      } catch (error) {
+        console.log("Error at NO branch: ", error);
+      }
     } else {
-      console.log("intru in yes");
       dataToInsert.state = 3;
-      const res = await axios.post(`/api/updateTbReceptionYes/`, dataToInsert);
+      try {
+        const res = await axios.post(`/api/updateTbReceptionYes/`, dataToInsert);
+      } catch (error) {
+        console.log("Error at YES branch: ", error);
+      }
     }
 
     setShowSecondContent(false);
@@ -569,11 +584,10 @@ const RightSideContent = ({
     return (
       <div className="space-y-4 px-4">
         {selectedOrder.map((order: any, index: any) => (
-          <Card key={index} className="max-w-[600px] mx-auto">
-            <CardHeader className="flex gap-9">
+          <Card key={index} className="max-w-[600px]">
+            <CardHeader className="flex justify-between items-center gap-9">
               <b>Order details</b>
-
-              <p>Status: {order.state}</p>
+              <p className="ml-auto">Status: {renderChip(order.state)}</p>
             </CardHeader>
             <Divider />
             <CardBody>
@@ -761,7 +775,9 @@ const RightSideContent = ({
                                       <TableCell>
                                         {data.nropallet_recepcion}
                                       </TableCell>
-                                      <TableCell>{data.state}</TableCell>
+                                      <TableCell>
+                                        {renderChip(data.state)}
+                                      </TableCell>
                                     </TableRow>
                                   ))}
                                 </TableBody>
