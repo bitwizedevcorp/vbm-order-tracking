@@ -82,6 +82,8 @@ const RightSideContent = ({
   const [selectedLine, setSelectedLine] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<any>();
   const [boxesButtonClickId, setBoxesButtonClickId] = useState<any>();
+  const [orderDetailId, setOrderDetailId] = useState<any>();
+
   const [secondaryModelDataLoaded, setSecondaryModelDataLoaded] =
     useState<any>();
   const [addLineButtonTriggered, setAddLineButtonTriggered] =
@@ -98,6 +100,8 @@ const RightSideContent = ({
 
   const handlerClickDeliveryPallet = async (idorden_idpunnet: any) => {
     handleMainModalOpen();
+    const [idorder, idpunnet] = idorden_idpunnet.split("_");
+    setOrderDetailId(idpunnet);
     try {
       const res = await axios.get(`/api/getDeliveryPallet/${idorden_idpunnet}`);
       setDeliveryData(res.data);
@@ -211,15 +215,11 @@ const RightSideContent = ({
       <Chip className="capitalize" color={_color} size="sm" variant="flat">
         {_text}
       </Chip>
-    )
-  }
+    );
+  };
 
   const renderStatusCell = (data: any): JSX.Element => {
-    return (
-      <TableCell>
-        {renderChip(data.state)}
-      </TableCell>
-    );
+    return <TableCell>{renderChip(data.state)}</TableCell>;
   };
 
   const renderSingleButton = (order: any, entry: any): JSX.Element => {
@@ -435,54 +435,69 @@ const RightSideContent = ({
     let dataToInsert;
     // If the pallets were selected in the current session
     // This logic might be dropped based on Bogdan's new logic for backend
-    if (nrPalletsDeliveryInProgress[boxesButtonClickId]) {
-      
-      if (nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey) {
-      }
-      const _id = Number(
-        nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey
-      );
-      
-      for (const i in secondaryModalData) {
-        // Get which nropallet_recepcion was used (if it exists in the session)
-        if (secondaryModalData[i].id === _id) {
-          _nropallet_recepcion = secondaryModalData[i].nropallet_recepcion;
-        }
-      }
+    // if (nrPalletsDeliveryInProgress[boxesButtonClickId]) {
 
-      dataToInsert = {
-          ...detailsDeleiveryReception,
+    //   if (nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey) {
+    //   }
+    //   const _id = Number(
+    //     nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey
+    //   );
+
+    //   for (const i in secondaryModalData) {
+    //     // Get which nropallet_recepcion was used (if it exists in the session)
+    //     if (secondaryModalData[i].id === _id) {
+    //       _nropallet_recepcion = secondaryModalData[i].nropallet_recepcion;
+    //     }
+    //   }
+
+    //   dataToInsert = {
+    //       ...detailsDeleiveryReception,
+    //       numberBaxes: baxesValue,
+    //       kgUsedBaxes: baxesValueTotalComputation._total,
+    //       nropallet_recepcion: _nropallet_recepcion,
+    //       state: 0,
+    //       insertedId: nrPalletsDeliveryInProgress[boxesButtonClickId]["lastInsertedId"],
+    //       idDeliveryClicked: idDeliveryClicked,
+    //       idOrder: selectedOrder[0].idorden,
+    //       idOrdenDetails: selectedOrder[0].id,
+    //     };
+    // } else { // If the pallets were NOT selected in the current session
+    // AKA: New logic without a necessary click on the desired pallets
+
+    console.log("Info", detailsDeleiveryReception + boxesButtonClickId);
+
+    for (const infoToSend of detailsDeleiveryReception) {
+      if (infoToSend.nropallet_delivery === boxesButtonClickId) {
+        dataToInsert = {
+          idCreate: infoToSend.id,
+          idorden: infoToSend.idorden,
+          idpunnet: infoToSend.idpunnet,
+          nropallet_delivery: infoToSend.nropallet_delivery,
+          nropallet_recepcion: infoToSend.nropallet_recepcion,
           numberBaxes: baxesValue,
           kgUsedBaxes: baxesValueTotalComputation._total,
-          nropallet_recepcion: _nropallet_recepcion,
           state: 0,
-          insertedId: nrPalletsDeliveryInProgress[boxesButtonClickId]["lastInsertedId"],
           idDeliveryClicked: idDeliveryClicked,
-          idOrder: selectedOrder[0].idorden,
-          idOrdenDetails: selectedOrder[0].id,
         };
-    } else { // If the pallets were NOT selected in the current session
-             // AKA: New logic without a necessary click on the desired pallets
-      dataToInsert = {
-        ...detailsDeleiveryReception,
-        numberBaxes: baxesValue,
-        kgUsedBaxes: baxesValueTotalComputation._total,
-        state: 0,
-        idDeliveryClicked: idDeliveryClicked,
-      };
+      }
     }
 
-    if (answer === "no") {
+    //}
+
+    if (answer === "no" && dataToInsert) {
       dataToInsert.state = 1;
       try {
         const res = await axios.post(`/api/updateTbReceptionNo/`, dataToInsert);
       } catch (error) {
         console.log("Error at NO branch: ", error);
       }
-    } else {
+    } else if (answer === "yes" && dataToInsert) {
       dataToInsert.state = 3;
       try {
-        const res = await axios.post(`/api/updateTbReceptionYes/`, dataToInsert);
+        const res = await axios.post(
+          `/api/updateTbReceptionYes/`,
+          dataToInsert
+        );
       } catch (error) {
         console.log("Error at YES branch: ", error);
       }
@@ -494,9 +509,7 @@ const RightSideContent = ({
 
   const finsihTheOrderDetailsButton = async () => {
     try {
-      const res = await axios.get(
-        `/api/finshOrderDetail/${selectedOrder[0].id}`
-      );
+      const res = await axios.get(`/api/finishOrderDetail/${orderDetailId}`);
       if (res.status === 200) {
         alert("This order detailed was finished!");
       } else {

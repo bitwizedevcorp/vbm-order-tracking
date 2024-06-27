@@ -6,6 +6,7 @@ export async function GET(
   { params }: { params: { idOrderDetail: string } }
 ) {
   const id = params.idOrderDetail;
+  console.log(id);
   try {
     const updateStateOfOrderDetail = await prisma.tb_orden_detail.update({
       where: {

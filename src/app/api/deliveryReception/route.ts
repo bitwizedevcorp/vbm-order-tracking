@@ -20,8 +20,8 @@ export async function POST(req: Request) {
           bax: 0,
           kg_used: 0.0,
           started: new Date(),
-          finish: new Date().toISOString(),
-          tiempo: new Date().toISOString(),
+          finish: new Date("1970-01-01T00:00:00Z"),
+          tiempo: new Date(new Date().setHours(0, 0, 0, 0)),
         },
       });
       insertedIds.push(insertDb.id);
