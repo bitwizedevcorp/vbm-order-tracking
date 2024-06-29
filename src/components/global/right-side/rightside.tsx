@@ -250,6 +250,7 @@ const RightSideContent = ({
     } catch (error) {
       console.log("ddd", error);
     }
+    reloadInfos();
   };
 
   const renderDoubleButton = (order: any, entry: any): JSX.Element => {
@@ -430,6 +431,21 @@ const RightSideContent = ({
     setShowSecondContent(true);
   };
 
+  const reloadInfos = async () => {
+    if (isMainModalOpen) {
+      if (currentOrderInfo.idorden_idpunnet) {
+        try {
+          const res = await axios.get(
+            `/api/getDeliveryPallet/${currentOrderInfo.idorden_idpunnet}`
+          );
+          setDeliveryData(res.data);
+        } catch (error) {
+          console.error("Error fetching delivery data", error);
+        }
+      }
+    }
+  }
+  
   const handleGroupButtonClick = async (answer: any) => {
     let _nropallet_recepcion = "";
     let dataToInsert;
@@ -502,7 +518,7 @@ const RightSideContent = ({
         console.log("Error at YES branch: ", error);
       }
     }
-
+    reloadInfos();
     setShowSecondContent(false);
     setIsFourthModalOpen(false);
   };
@@ -546,6 +562,8 @@ const RightSideContent = ({
       }
     }
   });
+
+  
 
   useEffect(() => {
     if (isMainModalOpen) {
