@@ -54,6 +54,8 @@ const RightSideContent = ({
   const [querryDoneForPunnet, setQuerryDoneForPunent] =
     useState<boolean>(false);
   const [dataWeightPunnet, setDataWeightPunnet] = useState<string>("");
+  const [dataPunnetPerBax, setDataPunnetPerBax] = useState<string>("");
+
   const [showSecondContent, setShowSecondContent] = useState(false);
 
   const handleMainModalOpen = () => setIsMainModalOpen(true);
@@ -69,6 +71,9 @@ const RightSideContent = ({
   const handleFourthModalClose = () => {
     setIsFourthModalOpen(false);
     setShowSecondContent(false);
+    setBaxesValue("");
+    setDataWeightPunnet("");
+    setBaxesValueTotalComputation({ _total: 0, _text: "" });
   };
 
   const [deliveryData, setDeliveryData] = useState([]);
@@ -307,13 +312,12 @@ const RightSideContent = ({
     setBoxesButtonClickId(nrPalletClicked);
     setIdDeliveryClicked(iddelivery);
     handleFourthModalOpen();
-    console.log("pun", punnet, nrPalletClicked);
     if (!querryDoneForPunnet) {
       try {
-        console.log("orderDetailed", punnet);
         const res = await axios.get(`/api/getProductWeight/${idpunnet}`);
         setQuerryDoneForPunent(true);
         setDataWeightPunnet(res.data.orderDetail.weight);
+        setDataPunnetPerBax(res.data.orderDetail.punnet_bax);
       } catch (error) {
         setQuerryDoneForPunent(false);
         console.log("Cannot fetch getProductWeight", error);
@@ -444,43 +448,10 @@ const RightSideContent = ({
         }
       }
     }
-  }
-  
+  };
+
   const handleGroupButtonClick = async (answer: any) => {
-    let _nropallet_recepcion = "";
     let dataToInsert;
-    // If the pallets were selected in the current session
-    // This logic might be dropped based on Bogdan's new logic for backend
-    // if (nrPalletsDeliveryInProgress[boxesButtonClickId]) {
-
-    //   if (nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey) {
-    //   }
-    //   const _id = Number(
-    //     nrPalletsDeliveryInProgress[boxesButtonClickId].currentKey
-    //   );
-
-    //   for (const i in secondaryModalData) {
-    //     // Get which nropallet_recepcion was used (if it exists in the session)
-    //     if (secondaryModalData[i].id === _id) {
-    //       _nropallet_recepcion = secondaryModalData[i].nropallet_recepcion;
-    //     }
-    //   }
-
-    //   dataToInsert = {
-    //       ...detailsDeleiveryReception,
-    //       numberBaxes: baxesValue,
-    //       kgUsedBaxes: baxesValueTotalComputation._total,
-    //       nropallet_recepcion: _nropallet_recepcion,
-    //       state: 0,
-    //       insertedId: nrPalletsDeliveryInProgress[boxesButtonClickId]["lastInsertedId"],
-    //       idDeliveryClicked: idDeliveryClicked,
-    //       idOrder: selectedOrder[0].idorden,
-    //       idOrdenDetails: selectedOrder[0].id,
-    //     };
-    // } else { // If the pallets were NOT selected in the current session
-    // AKA: New logic without a necessary click on the desired pallets
-
-    console.log("Info", detailsDeleiveryReception + boxesButtonClickId);
 
     for (const infoToSend of detailsDeleiveryReception) {
       if (infoToSend.nropallet_delivery === boxesButtonClickId) {
@@ -497,8 +468,6 @@ const RightSideContent = ({
         };
       }
     }
-
-    //}
 
     if (answer === "no" && dataToInsert) {
       dataToInsert.state = 1;
@@ -541,29 +510,41 @@ const RightSideContent = ({
       if (querryDoneForPunnet) {
         if (dataWeightPunnet !== "") {
           const kgFromDB = Number(dataWeightPunnet);
-          let total: Number = 0;
+          const inputBax = Number(baxesValue);
+          const punnetsPerBax = Number(dataPunnetPerBax);
 
-          total = kgFromDB * Number(baxesValue);
-          if (!baxesValue || baxesValue === "0") {
+          let total = 0;
+
+          if (
+            !baxesValue ||
+            baxesValue === "0" ||
+            !dataPunnetPerBax ||
+            dataPunnetPerBax === "0"
+          ) {
             setBaxesValueTotalComputation({ _total: total, _text: "" });
           } else {
+            total = kgFromDB * inputBax * punnetsPerBax;
             setBaxesValueTotalComputation({
               _total: total,
               _text: String(total) + "kg",
             });
           }
 
-          //baxesValueTotalComputation._total should be added in DBs
+          // baxesValueTotalComputation._total should be added in DBs
         } else {
-          //got empty res from dbs
+          // got empty res from dbs
         }
       } else {
-        //loading
+        // loading
       }
     }
-  });
-
-  
+  }, [
+    isFourthModalOpen,
+    querryDoneForPunnet,
+    dataWeightPunnet,
+    baxesValue,
+    dataPunnetPerBax,
+  ]);
 
   useEffect(() => {
     if (isMainModalOpen) {

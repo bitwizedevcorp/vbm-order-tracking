@@ -122,13 +122,13 @@ model tb_lineas {
 }
 
 model tb_mail {
-  id           String @id @db.Char(36)
-  nombre       String @db.VarChar(45)
-  apellido     String @db.VarChar(45)
-  mail         String @db.VarChar(45)
-  estado       BigInt
-  sincro       BigInt
-  lastmodified BigInt
+  id        String   @id @db.Char(36)
+  nombre    String   @db.VarChar(45)
+  apellido  String   @db.VarChar(45)
+  mail      String   @db.VarChar(45)
+  estado    BigInt
+  morning   DateTime @db.Time(0)
+  afternoon DateTime @db.Time(0)
 }
 
 model tb_orden {
@@ -261,7 +261,7 @@ model tb_recepcion {
   nom_bandeja       String   @db.VarChar(45)
   bandeja_tara      Decimal  @db.Decimal(7, 4)
   cantidad_bandejas Int
-  codcaserola       String   @db.Char(36)
+  codcaserola       Int
   nom_caserola      String   @db.VarChar(45)
   caserola_tara     Decimal  @db.Decimal(7, 4)
   cantidad_caserola BigInt
@@ -411,16 +411,15 @@ model tb_product {
 }
 
 model tb_inout {
-  id         Int      @id
+  id         Int      @id @default(autoincrement())
   idproduct  Int
   fecha      DateTime @db.DateTime(0)
-  idrequest  Int
+  idrequest  Int      @default(0)
   idproducer Int      @default(0)
-  in_        Int
-  out_       Int
+  tipo       Int      @default(0)
   quantity   Int
-  invoice    Int
-  provider   String   @db.VarChar(100)
+  invoice    Int      @default(0)
+  provider   String   @default("0") @db.VarChar(100)
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments

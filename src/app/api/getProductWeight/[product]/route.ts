@@ -21,12 +21,13 @@ export async function GET(
       },
       select: {
         weight: true,
+        punnet_bax: true,
       },
     });
-
+    console.log(orderDetail);
     return NextResponse.json({
       message: "Your order detail",
-      orderDetail: orderDetail,
+      orderDetail,
     });
   } catch (error) {
     console.error(error);
