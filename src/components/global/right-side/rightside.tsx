@@ -72,7 +72,6 @@ const RightSideContent = ({
     setIsFourthModalOpen(false);
     setShowSecondContent(false);
     setBaxesValue("");
-    setDataWeightPunnet("");
     setBaxesValueTotalComputation({ _total: 0, _text: "" });
   };
 
@@ -489,6 +488,8 @@ const RightSideContent = ({
     }
     reloadInfos();
     setShowSecondContent(false);
+    setBaxesValue("");
+    setBaxesValueTotalComputation({ _total: 0, _text: "" });
     setIsFourthModalOpen(false);
   };
 
@@ -547,23 +548,42 @@ const RightSideContent = ({
   ]);
 
   useEffect(() => {
-    if (isMainModalOpen) {
-      const interval = setInterval(async () => {
-        if (currentOrderInfo.idorden_idpunnet) {
-          try {
-            const res = await axios.get(
-              `/api/getDeliveryPallet/${currentOrderInfo.idorden_idpunnet}`
-            );
-            setDeliveryData(res.data);
-          } catch (error) {
-            console.error("Error fetching delivery data", error);
-          }
+    const fetchDeliveryData = async () => {
+      if (isMainModalOpen && currentOrderInfo.idorden_idpunnet) {
+        try {
+          const res = await axios.get(
+            `/api/getDeliveryPallet/${currentOrderInfo.idorden_idpunnet}`
+          );
+          setDeliveryData(res.data);
+        } catch (error) {
+          console.error("Error fetching delivery data", error);
         }
-      }, 20000);
+      }
+    };
 
-      return () => clearInterval(interval);
+    if (isMainModalOpen) {
+      fetchDeliveryData(); // Initial fetch
     }
   }, [isMainModalOpen, currentOrderInfo]);
+
+  // useEffect(async () => {
+  //   if (isMainModalOpen) {
+  //     //  const interval = setInterval(async () => {
+  //     if (currentOrderInfo.idorden_idpunnet) {
+  //       try {
+  //         const res = await axios.get(
+  //           `/api/getDeliveryPallet/${currentOrderInfo.idorden_idpunnet}`
+  //         );
+  //         setDeliveryData(res.data);
+  //       } catch (error) {
+  //         console.error("Error fetching delivery data", error);
+  //       }
+  //     }
+  //     // });
+
+  //     //  return () => clearInterval(interval);
+  //   }
+  // }, [isMainModalOpen, currentOrderInfo]);
 
   if ((!selectedOrder || selectedOrder.length === 0) && orderNumber > 0) {
     return (

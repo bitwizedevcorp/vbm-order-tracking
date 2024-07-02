@@ -3,6 +3,7 @@ import prisma from "../../../../lib/prisma";
 
 export async function POST(req: Request) {
   const dataToInsert = await req.json();
+  console.log("data", dataToInsert);
   try {
     const dataAvailable = await prisma.tb_recepcion.findFirst({
       where: {
@@ -41,6 +42,65 @@ export async function POST(req: Request) {
         }
       }
     }
+    const numberOfPallet = await prisma.tb_delivery_pallet.findUnique({
+      where: {
+        iddelivery: dataToInsert.idDeliveryClicked,
+      },
+      select: {
+        nrpallet: true,
+        bax_add: true,
+        kg_add: true,
+      },
+    });
+    const insertKgAndBaxexDeliveryPallet =
+      await prisma.tb_delivery_pallet.update({
+        where: {
+          iddelivery: dataToInsert.idDeliveryClicked,
+        },
+        data: {
+          bax_add:
+            Number(numberOfPallet?.bax_add) + Number(dataToInsert.numberBaxes),
+          kg_add: Number(numberOfPallet?.kg_add) + dataToInsert.kgUsedBaxes,
+        },
+      });
+
+    let tiempo: any; // Define tiempo as a number or undefined
+
+    const getStartedDate = await prisma.tb_delivery_reception.findUnique({
+      where: {
+        id: dataToInsert.idCreate,
+      },
+      select: {
+        started: true,
+        bax: true,
+        kg_used: true,
+      },
+    });
+
+    const finishDate: Date = new Date();
+
+    if (getStartedDate?.started) {
+      const startTime = new Date(getStartedDate.started).getTime();
+      const endTime = finishDate.getTime();
+      const durationInMs = endTime - startTime;
+
+      tiempo = new Date(durationInMs); // Convert duration in milliseconds to a Date object
+    } else {
+      tiempo = undefined; // Handle the case where started is undefined
+    }
+
+    const insertKgAndBaxexDeliveryReception =
+      await prisma.tb_delivery_reception.update({
+        where: {
+          id: dataToInsert.idCreate,
+        },
+        data: {
+          bax: Number(getStartedDate?.bax) + Number(dataToInsert.numberBaxes),
+          kg_used: Number(getStartedDate?.kg_used) + dataToInsert.kgUsedBaxes,
+          finish: finishDate,
+          tiempo: tiempo,
+        },
+      });
 
     return NextResponse.json({ message: "Success", status: 200 });
   } catch (error) {

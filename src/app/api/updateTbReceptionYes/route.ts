@@ -46,6 +46,8 @@ export async function POST(req: Request) {
       },
       select: {
         nrpallet: true,
+        bax_add: true,
+        kg_add: true,
       },
     });
     const insertKgAndBaxexDeliveryPallet =
@@ -54,8 +56,9 @@ export async function POST(req: Request) {
           iddelivery: dataToInsert.idDeliveryClicked,
         },
         data: {
-          bax_add: Number(dataToInsert.numberBaxes),
-          kg_add: dataToInsert.kgUsedBaxes,
+          bax_add:
+            Number(numberOfPallet?.bax_add) + Number(dataToInsert.numberBaxes),
+          kg_add: Number(numberOfPallet?.kg_add) + dataToInsert.kgUsedBaxes,
         },
       });
 
@@ -83,6 +86,8 @@ export async function POST(req: Request) {
       },
       select: {
         started: true,
+        bax: true,
+        kg_used: true,
       },
     });
 
@@ -104,8 +109,8 @@ export async function POST(req: Request) {
           id: dataToInsert.idCreate,
         },
         data: {
-          bax: Number(dataToInsert.numberBaxes),
-          kg_used: dataToInsert.kgUsedBaxes,
+          bax: Number(getStartedDate?.bax) + Number(dataToInsert.numberBaxes),
+          kg_used: Number(getStartedDate?.kg_used) + dataToInsert.kgUsedBaxes,
           finish: finishDate,
           tiempo: tiempo,
         },
