@@ -65,6 +65,7 @@ const Home = () => {
             selectedOrder={selectedOrder}
             orderNumber={data.length}
             orderDetailsLoaded={orderDetailsLoaded}
+            orderDetails={selectedOrder}
           />
         </div>
       </div>

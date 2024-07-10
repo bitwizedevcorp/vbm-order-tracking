@@ -37,10 +37,12 @@ const RightSideContent = ({
   selectedOrder,
   orderNumber,
   orderDetailsLoaded,
+  orderDetails,
 }: {
   selectedOrder: any;
   orderNumber: any;
   orderDetailsLoaded: any;
+  orderDetails: any;
 }) => {
   const [isMainModalOpen, setIsMainModalOpen] = useState(false);
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
@@ -499,6 +501,7 @@ const RightSideContent = ({
   };
 
   const handleGroupButtonClick = async (answer: any) => {
+    // console.log(orderDetails);
     let dataToInsert;
 
     for (const infoToSend of detailsDeleiveryReception) {
@@ -516,7 +519,6 @@ const RightSideContent = ({
         };
       }
     }
-
     if (answer === "no" && dataToInsert) {
       dataToInsert.state = 1;
       try {
@@ -524,11 +526,11 @@ const RightSideContent = ({
       } catch (error) {
         console.log("Error at NO branch: ", error);
       }
-
+      
       // Insert in tb_storage_packing
       const dataToInsertTbStoragePacking = {
         fecha: new Date(),
-        idproduct: dataToInsert.idorden,
+        idproduct: orderDetails[0].idpunnet,
         tipo: 2,
         quantity: dataToInsert.numberBaxes
       };
@@ -551,7 +553,7 @@ const RightSideContent = ({
       // Insert in tb_storage_packing
       const dataToInsertTbStoragePacking = {
         fecha: new Date(),
-        idproduct: dataToInsert.idorden,
+        idproduct: orderDetails[0].idpunnet,
         tipo: 2,
         quantity: dataToInsert.numberBaxes
       };
