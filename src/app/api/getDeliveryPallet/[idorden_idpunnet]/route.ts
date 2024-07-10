@@ -7,12 +7,17 @@ export async function GET(
 ) {
   const [idorden, idpunnet] = params.idorden_idpunnet.split("_");
   try {
-    const data = await prisma.tb_delivery_pallet.findMany({
+    let data = await prisma.tb_delivery_pallet.findMany({
       where: {
         idorden: Number(idorden),
         idpunnet_orden: Number(idpunnet),
       },
     });
+    console.log(data);
+    data = data.map((item: any) => ({
+      ...item,
+      ...{line: "N/A"},
+    }));
 
     return NextResponse.json(data);
   } catch (error) {

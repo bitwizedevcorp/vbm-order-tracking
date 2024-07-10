@@ -87,6 +87,7 @@ const RightSideContent = ({
   const [selectedKeys, setSelectedKeys] = useState<any>();
   const [boxesButtonClickId, setBoxesButtonClickId] = useState<any>();
   const [orderDetailId, setOrderDetailId] = useState<any>();
+  const [linesUsed, setLinesUsed] = useState<any[]>([]);
 
   const [secondaryModelDataLoaded, setSecondaryModelDataLoaded] =
     useState<any>();
@@ -335,6 +336,10 @@ const RightSideContent = ({
     setSelectedLine(event.target.value);
   };
 
+  const updateLinesUsed = (idOrden: any, idPunnetOrden: any, idDelivery: any, newLine: any) => {
+    setLinesUsed([...linesUsed, {idOrden: idOrden, idPunnetOrden: idPunnetOrden, idDelivery: idDelivery, newLine: newLine}]);
+  };
+
   const handleAddLineButton = async (data: any) => {
     //validate input
     setAddLineButtonTriggered(true);
@@ -376,6 +381,11 @@ const RightSideContent = ({
             "Response:",
             res.data
           );
+          const _tmpSplit = payload.idorden_idpunnet.split("_");
+          const idOrden = _tmpSplit[0];
+          const idPunnet = _tmpSplit[1];
+          console.log(payload);
+          // updateLinesUsed(idOrden, idPunnet)
         } catch (error) {
           console.error("Error updating reception state:", error);
           alert("Can not update reception state");
@@ -475,6 +485,19 @@ const RightSideContent = ({
       } catch (error) {
         console.log("Error at NO branch: ", error);
       }
+
+      // Insert in tb_storage_packing
+      const dataToInsertTbStoragePacking = {
+        fecha: new Date(),
+        idproduct: dataToInsert.idorden,
+        tipo: 2,
+        quantity: dataToInsert.numberBaxes
+      };
+      try {
+        const res = await axios.post(`/api/insertTbStoragePacking/`, dataToInsertTbStoragePacking);
+      } catch (error) {
+        console.log("Cannot insert in TbStoragePacking (No branch): ", error);
+      }
     } else if (answer === "yes" && dataToInsert) {
       dataToInsert.state = 3;
       try {
@@ -484,6 +507,19 @@ const RightSideContent = ({
         );
       } catch (error) {
         console.log("Error at YES branch: ", error);
+      }
+
+      // Insert in tb_storage_packing
+      const dataToInsertTbStoragePacking = {
+        fecha: new Date(),
+        idproduct: dataToInsert.idorden,
+        tipo: 2,
+        quantity: dataToInsert.numberBaxes
+      };
+      try {
+        const res = await axios.post(`/api/insertTbStoragePacking/`, dataToInsertTbStoragePacking);
+      } catch (error) {
+        console.log("Cannot insert in TbStoragePacking (Yes branch): ", error);
       }
     }
     reloadInfos();
@@ -712,8 +748,8 @@ const RightSideContent = ({
                               <TableColumn>KG</TableColumn>
                               <TableColumn>Bax Added</TableColumn>
                               <TableColumn>Kg Added</TableColumn>
-
                               <TableColumn>Status</TableColumn>
+                              <TableColumn>Line</TableColumn>
                               <TableColumn>Select</TableColumn>
                             </TableHeader>
                             <TableBody>
@@ -724,8 +760,10 @@ const RightSideContent = ({
                                   <TableCell>{entry.kg}</TableCell>
                                   <TableCell>{entry.bax_add}</TableCell>
                                   <TableCell>{entry.kg_add}</TableCell>
-
                                   {renderStatusCell(entry)}
+                                  <TableCell>
+                                    <Chip color="default" variant="flat" size="sm">{entry.line}</Chip>
+                                  </TableCell>
                                   <TableCell>
                                     {entry.state === 2
                                       ? renderDoubleButton(order, entry)

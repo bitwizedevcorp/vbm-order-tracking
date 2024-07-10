@@ -80,10 +80,12 @@ model tb_delivery_reception {
 }
 
 model tb_destino_clientes {
-  id        Int @id
+  id        Int    @id
   idcliente Int
-  iddestino Int
-  estado    Int
+  idpais    Int
+  idcity    Int
+  city      String @db.VarChar(70)
+  address   String @db.VarChar(100)
 }
 
 model tb_destinos {
@@ -378,11 +380,11 @@ model tb_usuarios {
 model tb_variedades {
   idvariedad Int    @id
   Variedad   String @db.VarChar(50)
-  Estado     Int    @db.TinyInt
+  estado     Int    @db.TinyInt
 }
 
 model tb_version {
-  id           String @id @db.VarChar(45)
+  id           Int    @id
   licencia     String @db.Char(36)
   mac_id       String @db.VarChar(45)
   equipo       String @db.VarChar(45)
@@ -442,4 +444,27 @@ model tb_request_detail {
   delivered     Int
   obs           String   @db.LongText
   status        Int
+}
+
+model tb_cities {
+  idcity Int    @id
+  idpais Int
+  city   String @db.VarChar(45)
+}
+
+model tb_stamp {
+  id    Int      @id
+  fecha DateTime @db.DateTime(0)
+  title String   @db.VarChar(45)
+  obs   String   @db.LongText
+  ruta  String   @db.LongText
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tb_storage_packing {
+  id        Int      @id @default(autoincrement())
+  fecha     DateTime @db.DateTime(0)
+  idproduct Int
+  tipo      Int
+  quantity  Int
 }
