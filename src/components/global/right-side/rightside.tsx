@@ -181,6 +181,45 @@ const RightSideContent = ({
     }
   };
 
+  const renderChipLine = (lineNr: any): JSX.Element => {
+    let _text = "Line ";
+    let _color:
+      | "primary"
+      | "warning"
+      | "success"
+      | "default"
+      | "secondary"
+      | "danger"
+      | undefined = "primary";
+
+      switch (lineNr) {
+        case 1:
+          _text += lineNr;
+          _color = "success";
+          break;
+        case 2:
+          _text += lineNr;
+          _color = "warning";
+          break;
+        case "N/A":
+          _text = "N/A";
+          _color = "default";
+          break;
+  
+        default:
+          _text += lineNr;
+          _color = "primary";
+          break;
+      }
+  
+      return (
+        <Chip className="capitalize" color={_color} size="sm" variant="flat">
+          {_text}
+        </Chip>
+      );
+
+  }
+
   const renderChip = (chipStatus: any): JSX.Element => {
     let _text = chipStatus;
     let _color:
@@ -762,7 +801,7 @@ const RightSideContent = ({
                                   <TableCell>{entry.kg_add}</TableCell>
                                   {renderStatusCell(entry)}
                                   <TableCell>
-                                    <Chip color="default" variant="flat" size="sm">{entry.line}</Chip>
+                                    {renderChipLine(entry.line)}
                                   </TableCell>
                                   <TableCell>
                                     {entry.state === 2
